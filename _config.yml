@@ -6,7 +6,7 @@ description: >-
   <a href="https://edu.epfl.ch/coursebook/en/data-visualization-COM-480">COM-480 Data visualization</a>
   at EPFL in Spring 2020. By <a href="https://github.com/lafrimousse">Jonathan Kaeser</a>
   and <a href="https://github.com/tvaucher">Timoté Vaucher</a>.
-url: https://tvaucher.github.io/youtube-viz/
+url: https://tvaucher.github.io/youtube-viz
 baseurl: ""
 # paginate: 5
 permalink: pretty
