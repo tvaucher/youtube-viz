@@ -26,5 +26,9 @@ plugins:
   - jekyll-seo-tag
   - "jekyll-github-metadata"
 
+# Jekyll specifics
+exclude:
+  - README.md
+
 # Extra vars
 version: "0.0.1"
