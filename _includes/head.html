@@ -24,7 +24,10 @@
   <link rel="shortcut icon" href="{{ '/assets/favicon.ico' | absolute_url }}">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ '/atom.xml' | absolute_url }}">
-
+  {% if page.use_math %}
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  {% endif %}
   {% if site.google_analytics_id %}
   <script>
     (function (i, s, o, g, r, a, m) {
