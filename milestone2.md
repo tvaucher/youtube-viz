@@ -7,7 +7,7 @@ use_math: true
 
 ## Project Goals
 
-The goal of project is to study the kinds of content and formats that prospered on YouTube through the years and how the creation practices changed.
+The goals of the project are to study the kinds of content and formats that prospered on YouTube through the years and how the creation practices changed.
 In our opinion, the required steps are:
 
 1. Observe the evolution of the popularity of each category
@@ -17,9 +17,9 @@ Additionally, we want to make a fun experience, so that people explore this data
 
 ### Popularity score
 
-Some different approaches are being considered. Currently, for a category \\(C_i\\) and a time period \\(T\\), the score \\(score(C_i, T)\\) can be defined as
+Some different scoring approaches are being considered. Currently, for a category \\(C_i\\) and a time period \\(T\\), the score \\(score(C_i, T)\\) can be defined as
 \\[score(C_i, T) = \sum_{c_j = C_i \wedge t_j \in T} v_j \cdot w_j \\]
-Where for a given video \\(j\\): \\(c_j\\) is the category, \\(t_j\\) the publish date, \\(v_j\\) the number of views and \\(w_j\\) the weight associated with the channel that published the video. This weight is inversely proportional to the probability of a channel being sampled during the scrap phase. Rarer channels have higher weights because they are underrepresented in our sample.
+Where for a given video \\(j\\): \\(c_j\\) is its category, \\(t_j\\) its publish date, \\(v_j\\) its number of views and \\(w_j\\) the weight associated with the channel that published the video. This weight is inversely proportional to the probability of a channel being sampled during the scrap phase. Rarer channels have higher weights because they are underrepresented in our sample.
 
 To compute the popularity score for a given video, 2 schemes are currently approached:
 
