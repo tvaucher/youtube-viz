@@ -1,6 +1,6 @@
 # YouTube Longitudinal Data Visualization
 
-Welcome in the github pages repository of our YouTube visualization project. Our aim is to provide an interactive visualization of about 96 mio YouTube videos from english channels with more than 10k subscribers. This project was made for the [COM-480 Data visualization](https://edu.epfl.ch/coursebook/en/data-visualization-COM-480) class at EPFL in Spring 2020. You can find more information about our preprocessing and milestones in the [class repository](https://github.com/com-480-data-visualization/com-480-project-datavirus/). Our results are presented [here](https://tvaucher.github.io/youtube-viz/)
+Welcome in the GitHub pages repository of our YouTube visualization project. Our aim is to provide an interactive visualization of about 96 mio YouTube videos from English channels with more than 10k subscribers. This project was made for the [COM-480 Data visualization](https://edu.epfl.ch/coursebook/en/data-visualization-COM-480) class at EPFL in Spring 2020. You can find more information about our preprocessing and milestones in the [class repository](https://github.com/com-480-data-visualization/com-480-project-datavirus/). Our results are presented [here](https://tvaucher.github.io/youtube-viz/)
 
 ## Setup
 
@@ -17,7 +17,7 @@ This will download Jekyll and the necessary plugins to run our website
 
 ### Development
 
-To serve the website locall, run `bundle exec jekyll serve`. This will launch a page at [http://localhost:4000](http://localhost:4000). Jekyll automatically watch for changes so you simply need to refresh the page when you make modifications
+To serve the website locally, run `bundle exec jekyll serve`. This will launch a page at [http://localhost:4000](http://localhost:4000). Jekyll automatically watch for changes so you simply need to refresh the page when you make modifications
 
 ### Deployment
 
