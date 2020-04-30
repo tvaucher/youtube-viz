@@ -58,6 +58,15 @@ html {
   }
 }
 
+figcaption {
+  font-size: 12px;
+}
+@media (min-width: 38em) {
+  figcaption {
+    font-size: 16px;
+  }
+}
+
 body {
   color: #515151;
   background-color: #fff;
