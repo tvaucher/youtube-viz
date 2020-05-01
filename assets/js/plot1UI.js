@@ -10,12 +10,12 @@
 
     //-------------SOME UI PARAMTER TO TUNE-------------
 
-    let minNumberOfPointInScreen = 50;
+    let minNumberOfPointInScreen = 10;
     let curveType = d3.curveLinear;
     //'curveMonotoneX','curveLinear','curveBasis', 'curveCardinal', 'curveStepBefore',...
 
     const stackedAreaMargin = {
-      top: 0,
+      top: 20,
       left: 70,
       width: svgWidth * 0.9,
       height: 350,
@@ -806,11 +806,32 @@
     }
 
     function removeVerticalLines() {
+      removeDate();
       stackedArea.select(".verticalLinesContainer").remove();
     }
 
-    function addVerticalLines(timestamps, color) {
+    function removeDate() {
+      svg.select("#currentDateDisplayed").remove();
+    }
+
+    function addDate(timestamp, date, color) {
+      removeDate();
+      let year = date.getFullYear();
+      let month = ("0" + (date.getMonth() + 1)).slice(-2);
+      let day = ("0" + date.getDate()).slice(-2);
+      let x = getXscale()(new Date(timestamp)) + stackedAreaMargin.left;
+      svg
+        .append("text")
+        .attr("id", "currentDateDisplayed")
+        .attr("transform", "translate(" + x + "," + 19 + ")")
+        .text(day + "-" + month + "-" + year)
+        .attr("fill", color)
+        .attr("text-anchor", "middle");
+    }
+
+    function addVerticalLines(timestamps, color, dateToDisplay) {
       removeVerticalLines();
+      addDate(timestamps[0], dateToDisplay, color);
       let linesContainer = stackedArea
         .append("g")
         .attr("class", "verticalLinesContainer");

@@ -8,7 +8,7 @@
 
 #plot1_container {
   /*border: 1px solid blue;*/
-  height: 430px;
+  height: 450px;
 }
 
 #plot1_title_container {
@@ -82,7 +82,32 @@
   fill:none
 }*/
 
+.xAxis,
+.xAxis path,
+.xAxis .tick line {
+  stroke: #b1b1b1;
+}
+
+.yAxis,
+.yAxis path,
+.yAxis .tick line {
+  stroke: #b1b1b1;
+}
+
+#currentDateDisplayed {
+  font-size: 14px;
+  font-family:  "PT Sans", Helvetica, Arial, sans-serif;
+}
+
 /*------------AXIS OF THE TIME SLIDER-------------------*/
+.sliderBox g path,
+.sliderBox g line,
+.sliderBox g tick,
+.sliderBox .outerTick,
+.sliderBox text {
+  stroke: #b1b1b1;
+}
+
 /*The line that divides the context from the above graph*/
 /*g.context>line{
   stroke: blue;
