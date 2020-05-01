@@ -542,7 +542,7 @@
       //remove the previous axis
       svg.select(".yAxis").remove();
       //and recreate the new axis
-      let yAxis = d3.axisLeft(getYscale());
+      let yAxis = d3.axisLeft(getYscale()).tickFormat(d3.format(".2s"));
       svg
         .append("g")
         .attr("class", "yAxis")

@@ -29,7 +29,7 @@
 
     //load the csv file and call addElementsToStackedArea(),createSlider() when done
     //d3.csv("/data/plot1data2.csv",function(d) {
-    d3.csv("assets/data/video_count/count_week.csv", function (d) {
+    d3.csv("assets/data/score/score_week.csv", function (d) {
       data = model.prepareData(d);
       maxYScore = stacksSupperpose
         ? data.maxScoreAtTimeStamp
