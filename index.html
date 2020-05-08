@@ -12,10 +12,15 @@ as_viz: true
   <div class="plot1">
     <div id="plot1_title_container">
     </div>
+    <div id="yAxisSelectorWrapper">
+      <label for="yAxisSelector">Scale Y axis perfectly for:</label>
+      <select name="yAxisSelector" id="yAxisSelector">
+      </select>
+    </div>
     <div id="plot1_container">
     </div>
     <div class="plot1CheckBoxes">
-      <span>
+      <span style="display:none;">
         <input type="checkbox" name="freezeYAxis" id="freezeYAxis" />
         <label for="freezeYAxis">Freeze Y axis</label>
       </span>
@@ -31,8 +36,10 @@ as_viz: true
   </div>
   <h2>Comments</h2>
   <p>
-    The plots currently represent the evolution of the score of each category over time. The formula for it is described <a href="{{ site.baseurl }}/milestone-2/">here</a>.
-    We directly remark that there's a huge spike in fall 2009 in the music category. This is due to VEVO dumping in a very short period of time, almost all the clips from last century's music.
+    The plots currently represent the evolution of the score of each category over time. The formula for it is described
+    <a href="{{ site.baseurl }}/milestone-2/">here</a>.
+    We directly remark that there's a huge spike in fall 2009 in the music category. This is due to VEVO dumping in a
+    very short period of time, almost all the clips from last century's music.
   </p>
 </div>
 

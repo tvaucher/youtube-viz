@@ -5,55 +5,67 @@
     const model = App.Plot1DataModel;
     const UI = App.Plot1UI;
 
+    /*When this timer fires, it compute the chart interleaving order*/
     var heavyComputationTimer = null;
 
-    //the charts that will be displayed
+    //the data from the csv file
+    let data = null;
+
+    /*The graphicals elements in the chartArea*/
     let charts = [];
     let upperLines = [];
+
+    /*Some actual states about the graph*/
     let maxYScore = null;
     let displayedXInterval = null;
+    let categorySelected = null;
+    let scaleSelected = 0;
 
+    //-------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH --------------------------------------------
     let stacksSupperpose = true;
     let streamChartWhenSupperPosed = true;
-    let stackClever = true;
     let adapativeYScale = true;
 
-    let data = null;
-    let categorySelected = null;
-
+    //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
     let freezeYCheckBox = document.getElementById("freezeYAxis");
     let streamGraphXbSpan = document.getElementById("streamGraphXbSpan");
     let streamGraphCheckBox = document.getElementById("streamGraphXb");
-    //define the position of the rect that will contain the stacked graphs
 
-    //load the csv file and call addElementsToStackedArea(),createSlider() when done
-    //d3.csv("/data/plot1data2.csv",function(d) {
-    d3.csv("assets/data/score/score_week.csv", function (d) {
-      data = model.prepareData(d);
-      maxYScore = stacksSupperpose
-        ? data.maxScoreAtTimeStamp
-        : data.maxSingleScore;
-      displayedXInterval = [data.smallestDate, data.biggestDate];
-      UI.setData({
-        data: data,
-        maxYscore: maxYScore,
-        onBrush: userBrushed,
-      });
-      UI.prepareElements();
-      addElementsToStackedArea(data);
-    });
+    let yAxisSelector = document.getElementById("yAxisSelector");
+    let yAxisBox = document.getElementById("yAxisSelectorWrapper");
 
+    //the related event listeners
     interLeavingCheckBox.addEventListener("change", function (e) {
       setStackSupperposed(!e.target.checked);
     });
 
     freezeYCheckBox.addEventListener("change", function (e) {
-      adapatYScale(!e.target.checked);
+      shouldAdaptYScale(!e.target.checked);
     });
 
     streamGraphCheckBox.addEventListener("change", function (e) {
       setSteamGraph(e.target.checked);
+    });
+
+    yAxisSelector.addEventListener("change", function (e) {
+      yAxisSelectorChanged(e.target.value);
+    });
+
+    //the keyboard shortcuts for theses functions
+    document.addEventListener("keypress", function (e) {
+      const char = String.fromCharCode(e.charCode);
+      if (char == "s") {
+        setStackSupperposed(!stacksSupperpose);
+      }
+
+      if (char == "y") {
+        shouldAdaptYScale(!adapativeYScale);
+      }
+
+      if (char == "t") {
+        setSteamGraph(!streamChartWhenSupperPosed);
+      }
     });
 
     function setStackSupperposed(newValue) {
@@ -78,9 +90,10 @@
         adaptYScale(displayedXInterval);
       }
       addElementsToStackedArea(data);
+      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
     }
 
-    function adapatYScale(shouldAdapt) {
+    function shouldAdaptYScale(shouldAdapt) {
       adapativeYScale = shouldAdapt;
       freezeYCheckBox.checked = !shouldAdapt;
       if (adapativeYScale) {
@@ -90,6 +103,7 @@
           UI.renderUpperLines(upperLines);
         }
       }
+      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
     }
 
     function setSteamGraph(futureValue) {
@@ -97,23 +111,68 @@
       streamGraphCheckBox.checked = streamChartWhenSupperPosed;
       if (stacksSupperpose) {
         addElementsToStackedArea(data);
+        if (scaleSelected != 0) {
+          yAxisSelectorChanged(scaleSelected);
+        }
       }
+      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
     }
 
-    document.addEventListener("keypress", function (e) {
-      const char = String.fromCharCode(e.charCode);
-      if (char == "s") {
-        setStackSupperposed(!stacksSupperpose);
-      }
+    function yAxisSelectorChanged(newValue) {
+      scaleSelected = newValue;
+      shouldAdaptYScale(adapativeYScale);
+      addElementsToStackedArea(data);
+      //console.log(newValue)
+      //yAxisSelector.style.backgroundColor = newValue == 0 ? "#B1B1B1" : UI.colorForFadingIndex(newValue-1)
+      //yAxisSelector.style.color = newValue == 0 ? "black" : "#B1B1B1"
+    }
 
-      if (char == "y") {
-        adapatYScale(!adapativeYScale);
-      }
+    function isSelectBoxHidden(bool) {
+      yAxisBox.style.visibility = bool ? "hidden" : "visible";
+    }
 
-      if (char == "t") {
-        setSteamGraph(!streamChartWhenSupperPosed);
+    //load the csv file and call addElementsToStackedArea(),createSlider() when done
+    d3.csv("assets/data/score/score_week.csv", function (d) {
+      data = model.prepareData(d);
+      prepareYAxisSelector(data);
+      maxYScore = stacksSupperpose
+        ? data.maxScoreAtTimeStamp
+        : data.maxSingleScore;
+      displayedXInterval = [data.smallestDate, data.biggestDate];
+
+      let selectBoxHidden = false;
+      if (stacksSupperpose && streamChartWhenSupperPosed) {
+        selectBoxHidden = true;
       }
+      isSelectBoxHidden(selectBoxHidden);
+
+      UI.setData({
+        data: data,
+        maxYscore: maxYScore,
+        onBrush: userBrushed,
+      });
+      UI.prepareElements();
+      addElementsToStackedArea(data);
     });
+
+    function prepareYAxisSelector(data) {
+      yAxisSelector.innerHTML = "";
+      let defautOption = document.createElement("option");
+      defautOption.value = "0";
+      defautOption.textContent = "All";
+      defautOption.style.backgroundColor = "#B1B1B1";
+      yAxisSelector.appendChild(defautOption);
+      data.categories.forEach((c, i) => {
+        let newOption = document.createElement("option");
+        newOption.value = i + 1;
+        newOption.textContent = c;
+        let backGroundColor = UI.colorForFadingIndex(i + 1);
+        let color = UI.colorForIndex(i + 1);
+        //newOption.style.backgroundColor = backGroundColor
+        //newOption.style.color = color
+        yAxisSelector.appendChild(newOption);
+      });
+    }
 
     function addElementsToStackedArea(data) {
       //draw the complete charts
@@ -125,6 +184,7 @@
             id: i,
             stacksSupperpose: stacksSupperpose,
             streamChartWhenSupperPosed: streamChartWhenSupperPosed,
+            scaleSelected: scaleSelected,
           })
         );
       }
@@ -137,6 +197,7 @@
               data: data,
               id: i,
               stacksSupperpose: stacksSupperpose,
+              scaleSelected: scaleSelected,
             })
           );
         }
@@ -150,25 +211,43 @@
       categorySelected = null;
       UI.makeTitlesLookNormal();
 
+      let chartInOrder = getChartInOrder(charts);
+
       if (stacksSupperpose) {
-        UI.renderCharts(charts, true);
+        UI.renderCharts(chartInOrder, true);
       } else {
-        UI.renderCharts(charts, false);
-        if (stackClever) {
-          UI.renderUpperLines(upperLines);
-          heavyCompute();
-          UI.renderUpperLines(upperLines);
-        }
-        //
+        UI.renderCharts(chartInOrder, false);
+        UI.renderUpperLines(upperLines);
+        heavyCompute();
+        UI.renderUpperLines(upperLines);
       }
     } //end of create plot function
 
+    function getChartInOrder(charts) {
+      if (scaleSelected == 0) {
+        return charts;
+      }
+      let ordered = [];
+      ordered.push(charts[scaleSelected - 1]);
+      charts.forEach((c) => {
+        if (c.id != scaleSelected - 1) {
+          ordered.push(c);
+        }
+      });
+      return ordered;
+    }
+
     function adaptYScale(forInterval) {
       if (adapativeYScale) {
+        let scaleToUse = scaleSelected;
+        if (stacksSupperpose && streamChartWhenSupperPosed) {
+          scaleToUse = 0;
+        }
         var bounds = model.getMaxValuesBetween(
           data,
           forInterval[0],
-          forInterval[1]
+          forInterval[1],
+          scaleToUse
         );
         var maxBound = stacksSupperpose
           ? bounds.maxScoreAtTimeStamp
@@ -203,7 +282,7 @@
 
       window.clearInterval(heavyComputationTimer);
       UI.removePartsOfChart();
-      if (!stacksSupperpose && stackClever) {
+      if (!stacksSupperpose) {
         UI.removePartsOfChart();
         //UI.removeLines()
         for (var i = 0; i < upperLines.length; i++) {
@@ -272,7 +351,7 @@
     }
 
     function mouseInChart(chartId) {
-      if (categorySelected == null) {
+      if (categorySelected == null && stacksSupperpose) {
         //console.log("Mouse went inside chart "+ chartId)
         UI.addFrontCharts(chartId, charts);
       }
@@ -293,12 +372,12 @@
         color,
         data.values[closestIndex].date
       );
-      console.log(
+      /*console.log(
         "Should display info for date " +
           atDate +
           " and category " +
           categorySelected
-      );
+      );*/
     }
 
     function mouseMoveInFrontChart(chartId, atDate) {
@@ -313,12 +392,12 @@
         color,
         data.values[closestIndex].date
       );
-      console.log(
+      /* console.log(
         "Should display info for date " +
           atDate +
           " and category " +
           categorySelected
-      );
+      ); */
     }
 
     function mouseClickedInPartOfChart(chartId) {

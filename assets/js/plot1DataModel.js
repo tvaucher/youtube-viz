@@ -2,8 +2,6 @@
   "use strict";
   var App = window.App || {};
   let Plot1DataModel = (function () {
-    let pixelStepWidth = 3;
-
     /**From the csv file, task is to return the data object*/
     function prepareData(csvData) {
       //getting all the categories
@@ -103,6 +101,24 @@
       };
     }
 
+    function pixelStepWidth(data, dateDisplayedInterval) {
+      timeStampBetween2Values =
+        data.values[1].date.getTime() - data.values[0].date.getTime();
+      smallestTsOnScreen = dateDisplayedInterval[0].getTime();
+      biggestTsOnscreen = dateDisplayedInterval[1].getTime();
+      return pixelStepWidth2();
+    }
+
+    let smallestTsOnScreen = null;
+    let biggestTsOnscreen = null;
+    let timeStampBetween2Values = null;
+    function pixelStepWidth2() {
+      let timeIntervalDisplayed = biggestTsOnscreen - smallestTsOnScreen;
+      let numberOfPointOnScreen =
+        timeIntervalDisplayed / timeStampBetween2Values;
+      return Math.min(3, Math.max(numberOfPointOnScreen / 30, 1));
+    }
+
     function computeTimeStampsBreaks(
       lines,
       data,
@@ -116,7 +132,10 @@
         data.values[1].date.getTime() - data.values[0].date.getTime();
       let nbOfInterval = Math.max(
         2,
-        Math.ceil(pixelIntervalBetween2Dates / pixelStepWidth)
+        Math.ceil(
+          pixelIntervalBetween2Dates /
+            pixelStepWidth(data, dateDisplayedInterval)
+        )
       );
 
       //how big is an interval temporary
@@ -131,6 +150,7 @@
       let orderUntil = [];
       let afterMinDate = false;
       let beforeMaxDate = true;
+      let maxLineLength = getMaxLengthOfLinesToConsider(lines, delta_x);
 
       data.criticalIndexes.indexesBeforeChanges.forEach((criticalIndex, i) => {
         let expectedFinalOrder = data.criticalIndexes.orderAfterChanges[i];
@@ -150,6 +170,7 @@
                   ? expectedFinalOrder
                   : getChartOrderNearTimeStamp(
                       lines,
+                      maxLineLength,
                       newTimeStamp,
                       delta_x,
                       xScale
@@ -167,7 +188,7 @@
             //we missed something
             orderUntil.push([
               actualOrder,
-              baseTemp + (nbOfInterval - 1) * realStepWidth,
+              baseTemp + (nbOfInterval - 0) * realStepWidth,
             ]);
           }
           actualOrder = expectedFinalOrder;
@@ -183,6 +204,37 @@
       }
 
       return orderUntil;
+    }
+
+    function getMaxLengthOfLinesToConsider(lines, delta_x) {
+      let toReturn = [];
+      lines.forEach((l) => {
+        let path = l.upperPathElem;
+        let totalLength = path.getTotalLength();
+        let startJumpFromX = 0;
+        let frontJumpLength = totalLength / 2;
+
+        //let point0x = path.getPointAtLength(startJumpFromX).x
+        let i = 0;
+        while (i < 100 && frontJumpLength >= delta_x / 8) {
+          let point1x = path.getPointAtLength(startJumpFromX + frontJumpLength)
+            .x;
+          let point2x = path.getPointAtLength(
+            startJumpFromX + 2 * frontJumpLength
+          ).x;
+          if (point2x > point1x) {
+            startJumpFromX += frontJumpLength;
+          } else {
+            frontJumpLength /= 2;
+          }
+          i++;
+        }
+        if (frontJumpLength >= delta_x / 8) {
+          console.error("Did not converge");
+        }
+        toReturn.push(startJumpFromX);
+      });
+      return toReturn;
     }
 
     function computeChartInterLeaving(timeStampsBreaks) {
@@ -222,14 +274,22 @@
       return true;
     }
 
-    function getChartOrderNearTimeStamp(lines, timeStamp, delta_x, xScale) {
+    function getChartOrderNearTimeStamp(
+      lines,
+      maxLineLength,
+      timeStamp,
+      delta_x,
+      xScale
+    ) {
       let toSort = [];
       let x = xScale(timeStamp);
-      lines.forEach((line) => {
-        let totalLength = line.upperPathElem.getTotalLength();
+      lines.forEach((line, indice) => {
+        //let totalLength = line.upperPathElem.getTotalLength()
+        let totalLength = maxLineLength[indice];
         toSort.push([
           line.id,
-          getPointAtX(x, delta_x, 0, totalLength, line.upperPathElem).y,
+          getPointAtX(x, delta_x, 0, totalLength, line.upperPathElem, line.id)
+            .y,
         ]);
       });
       toSort = toSort.sort((a, b) => {
@@ -243,24 +303,60 @@
       return order;
     }
 
-    function getPointAtX(x, delta, minX, maxX, path) {
+    function getPointAtX(x, delta, minX, maxX, path, pathId) {
+      let omin = minX;
+      let omax = maxX;
       let middle = (maxX + minX) / 2;
+      let lastMiddle = Number.MIN_VALUE;
       let middlePoint = path.getPointAtLength(middle);
       var i = 0;
-      while (Math.abs(x - middlePoint.x) >= delta / 2 && i < 100) {
+      while (
+        Math.abs(x - middlePoint.x) >= delta / 2 &&
+        i < 30 &&
+        Math.abs(lastMiddle - middle) >= delta / 2
+      ) {
         if (middlePoint.x < x) {
           minX = middle;
         } else {
           maxX = middle;
         }
+        lastMiddle = middle;
         middle = (minX + maxX) / 2;
         middlePoint = path.getPointAtLength(middle);
         i++;
       }
+      if (Math.abs(x - middlePoint.x) > delta / 2) {
+        console.error("Did not converged in " + i + " epoch");
+        console.log("Computed y at :" + x + " for path nb " + pathId);
+        console.log("with delta : " + delta);
+        console.log("and min-max " + omin + "-" + omax);
+        middle = (omax + omin) / 2;
+        lastMiddle = Number.MIN_VALUE;
+        middlePoint = path.getPointAtLength(middle);
+        i = 0;
+        while (
+          Math.abs(x - middlePoint.x) >= delta / 2 &&
+          i < 30 &&
+          Math.abs(lastMiddle - middle) >= delta / 2
+        ) {
+          if (middlePoint.x < x) {
+            minX = middle;
+          } else {
+            maxX = middle;
+          }
+          middle = (minX + maxX) / 2;
+          middlePoint = path.getPointAtLength(middle);
+          i++;
+          lastMiddle = middle;
+          console.log("-" + i + "-");
+          console.log(middle + "->" + middlePoint.x);
+          console.log("Target " + x);
+        }
+      }
       return middlePoint;
     }
 
-    function getMaxValuesBetween(data, startDate, endDate) {
+    function getMaxValuesBetween(data, startDate, endDate, forCat) {
       let firstIndex = 0;
       let lastIndex = 0;
 
@@ -286,6 +382,10 @@
         let values = data.values[i].values;
         let localSingleMax = values.reduce((a, b) => (a > b ? a : b), 0);
         let localTemporalMax = values.reduce((a, b) => a + b, 0);
+        if (forCat != 0) {
+          localSingleMax = values[forCat - 1];
+          localTemporalMax = localSingleMax;
+        }
         if (localSingleMax > maxSingleScore) {
           maxSingleScore = localSingleMax;
         }
@@ -329,6 +429,7 @@
       computeChartInterLeaving: computeChartInterLeaving,
       getMaxValuesBetween: getMaxValuesBetween,
       getClosestIndex: getClosestIndex,
+      pixelStepWidth: pixelStepWidth2,
     };
   })();
   App.Plot1DataModel = Plot1DataModel;

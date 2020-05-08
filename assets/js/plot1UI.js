@@ -10,25 +10,25 @@
 
     //-------------SOME UI PARAMTER TO TUNE-------------
 
-    let minNumberOfPointInScreen = 10;
+    let minNumberOfPointInScreen = 20;
     let curveType = d3.curveLinear;
     //'curveMonotoneX','curveLinear','curveBasis', 'curveCardinal', 'curveStepBefore',...
 
     const stackedAreaMargin = {
-      top: 20,
-      left: 70,
-      width: svgWidth * 0.9,
+      top: 15,
+      left: 95,
+      right: 40,
       height: 350,
     };
 
     const sliderBoxPreferences = {
       height: 60,
-      sliderWidth: 0.9,
-      tickHeight: 10,
+      tickHeight: 5,
       displayNiceAxis: false,
-      selectedRectHeight: 50,
     };
 
+    const stackedAreaMarginWidth =
+      svgWidth - stackedAreaMargin.right - stackedAreaMargin.left;
     //------------------------------------------------
     let svg = null;
     let stackedArea = null;
@@ -39,6 +39,10 @@
     let lastIndexHighlighted = null;
     let categorySelected = null;
     let partOfChartContainer = null;
+    let sliderBox = null;
+    let bbrush = null;
+    let brushXScale = null;
+    let toCallForBrush = null;
 
     //the revelant data needed
     let smallestDate = null;
@@ -68,6 +72,118 @@
       return timeIntervalBetweenDates * (minActualNbOfPoint - 1);
     }
 
+    //some mouse magic
+    let isMouseDown = false;
+    let mouseDownCoordinates = null;
+    let rectTemporarilyDisappeared = false;
+
+    function isMovingDown(toDate, clientY, clientX) {
+      if (isMouseDown) {
+        if (Math.abs(clientY - mouseDownCoordinates.y) < 40) {
+          rectTemporarilyDisappeared = false;
+          let fromDate =
+            mouseDownCoordinates == null ? null : mouseDownCoordinates.fromDate;
+          drawSelectionRect(fromDate, toDate, clientX);
+        } else {
+          rectTemporarilyDisappeared = true;
+          removeSelectionRect(null);
+          isMouseDown = true;
+        }
+      }
+    }
+    let xTolerance = 2;
+    function removeSelectionRect(toDate, clientX) {
+      if (toDate > biggestDate) {
+        toDate = biggestDate;
+      } else if (toDate < smallestDate) {
+        toDate = smallestDate;
+      }
+      let shouldZoom =
+        toDate != null &&
+        isMouseDown &&
+        !rectTemporarilyDisappeared &&
+        Math.abs(clientX - mouseDownCoordinates.x) > xTolerance;
+      isMouseDown = false;
+      stackedArea.select("#aboveRectContainer").remove();
+      if (shouldZoom) {
+        let fromDate =
+          mouseDownCoordinates == null ? null : mouseDownCoordinates.fromDate;
+        let smD = fromDate < toDate ? fromDate : toDate;
+        let biD = fromDate < toDate ? toDate : fromDate;
+        let originalInterval = [smD, biD];
+
+        let cleanedInterval = getCleanedInterval(originalInterval);
+        let redWarning =
+          cleanedInterval[0] != originalInterval[0] ||
+          cleanedInterval[1] != originalInterval[1];
+        timeIntervalSelected = redWarning
+          ? [smallestDate, biggestDate]
+          : cleanedInterval;
+        if (redWarning) {
+          positionBrush(null, null);
+        } else {
+          positionBrush(timeIntervalSelected[0], timeIntervalSelected[1]);
+        }
+      }
+      //console.log("SHOULD ZOOM "+shouldZoom)
+    }
+    function drawSelectionRect(fromDate, toDate, clientX) {
+      removeVerticalLines();
+      removeSelectionRect(null);
+      isMouseDown = true;
+
+      if (Math.abs(clientX - mouseDownCoordinates.x) <= xTolerance) {
+        return;
+      }
+
+      let x1 = getXscale()(fromDate);
+      let x2 = getXscale()(toDate);
+      let xLeft = x1 < x2 ? x1 : x2;
+      let width = Math.abs(x1 - x2);
+      let xRight = xLeft + width;
+
+      let smD = fromDate < toDate ? fromDate : toDate;
+      let biD = fromDate < toDate ? toDate : fromDate;
+      let originalInterval = [smD, biD];
+
+      let cleanedInterval = getCleanedInterval(originalInterval);
+      let redWarning =
+        cleanedInterval[0] != originalInterval[0] ||
+        cleanedInterval[1] != originalInterval[1];
+
+      let container = stackedArea.append("g").attr("id", "aboveRectContainer");
+
+      let rect = container
+        .append("rect")
+        .attr("x", xLeft) //(mouseDownCoordinates.x - stackedAreaMargin.left))
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", stackedAreaMargin.height);
+      if (redWarning) {
+        rect.attr("class", "redWarning");
+      }
+
+      let line1 = container
+        .append("line")
+        .attr("x1", xLeft)
+        .attr("y1", 0)
+        .attr("x2", xLeft)
+        .attr("y2", stackedAreaMargin.height);
+      if (redWarning) {
+        line1.attr("class", "redWarning");
+      }
+
+      let line2 = container
+        .append("line")
+        .attr("x1", xRight)
+        .attr("y1", 0)
+        .attr("x2", xRight)
+        .attr("y2", stackedAreaMargin.height);
+      if (redWarning) {
+        line2.attr("class", "redWarning");
+      }
+    }
+
     function prepareSVGElement() {
       //delete the previous svg element
       d3.select("#plot1_container").select("svg").remove();
@@ -79,8 +195,32 @@
         .attr("width", svgWidth)
         .attr("height", svgHeight);
 
-      svg.on("mouseout", function () {
-        removeVerticalLines();
+      svg.on("mouseup", function (e) {
+        //console.log("mouse up")
+        let coordinateX = d3.mouse(this)[0];
+        let dateSelected = getXscale().invert(
+          coordinateX - stackedAreaMargin.left
+        );
+        removeSelectionRect(dateSelected, d3.event.clientX);
+      });
+
+      //document.getElementById("plot1_container").addEventListener("mousedown",function(e){
+
+      svg.on("mousedown", function (e) {
+        //console.log("mouse down")
+        let coordinateX = d3.mouse(this)[0];
+        let fromDate = getXscale().invert(coordinateX - stackedAreaMargin.left);
+        if (fromDate < smallestDate) {
+          fromDate = smallestDate;
+        } else if (fromDate > biggestDate) {
+          fromDate = biggestDate;
+        }
+        mouseDownCoordinates = {
+          x: d3.event.clientX,
+          y: d3.event.clientY,
+          fromDate: fromDate,
+        };
+        isMouseDown = true;
       });
 
       svg
@@ -90,7 +230,7 @@
         .attr("x", 0)
         .attr("y", 0)
         .attr("height", stackedAreaMargin.height)
-        .attr("width", stackedAreaMargin.width);
+        .attr("width", stackedAreaMarginWidth);
 
       //add a container for the stacked area
       stackedArea = svg
@@ -121,22 +261,46 @@
 
       //file the stackedAreaBorderLines with the 4 lines:
       //top
-      /*stackedAreaBorderLines.append("line") .attr("x1", 0) .attr("y1", 0).attr("x2", stackedAreaMargin.width) .attr("y2", 0).attr("class", "stackedAreaBorder");
+      stackedAreaBorderLines
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", stackedAreaMarginWidth)
+        .attr("y2", 0)
+        .attr("class", "stackedAreaBorder");
       //bottom
-      stackedAreaBorderLines.append("line") .attr("x1", 0) .attr("y1", stackedAreaMargin.height).attr("x2", stackedAreaMargin.width) .attr("y2", stackedAreaMargin.height).attr("class", "stackedAreaBorder");
+      stackedAreaBorderLines
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", stackedAreaMargin.height)
+        .attr("x2", stackedAreaMarginWidth)
+        .attr("y2", stackedAreaMargin.height)
+        .attr("class", "stackedAreaBorder");
       //left
-      stackedAreaBorderLines.append("line") .attr("x1", 0) .attr("y1", 0).attr("x2", 0) .attr("y2", stackedAreaMargin.height).attr("class", "stackedAreaBorder");
+      stackedAreaBorderLines
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", 0)
+        .attr("y2", stackedAreaMargin.height)
+        .attr("class", "stackedAreaBorder");
       //right
-      stackedAreaBorderLines.append("line") .attr("x1", stackedAreaMargin.width) .attr("y1", 0).attr("x2", stackedAreaMargin.width) .attr("y2", stackedAreaMargin.height).attr("class", "stackedAreaBorder");*/
+      stackedAreaBorderLines
+        .append("line")
+        .attr("x1", stackedAreaMarginWidth)
+        .attr("y1", 0)
+        .attr("x2", stackedAreaMarginWidth)
+        .attr("y2", stackedAreaMargin.height)
+        .attr("class", "stackedAreaBorder");
 
       svg.on("mousemove", function () {
         let coordinateX = d3.mouse(this)[0];
         let coordinateY = d3.mouse(this)[1];
-        let tolerancePixel = 10;
+        let tolerancePixel = 30;
         if (
           coordinateX > stackedAreaMargin.left - tolerancePixel &&
           coordinateX <
-            stackedAreaMargin.left + stackedAreaMargin.width + tolerancePixel &&
+            stackedAreaMargin.left + stackedAreaMarginWidth + tolerancePixel &&
           coordinateY > stackedAreaMargin.top - tolerancePixel &&
           coordinateY <
             stackedAreaMargin.top + stackedAreaMargin.height + tolerancePixel
@@ -150,9 +314,14 @@
           } else if (dateSelected > biggestDate) {
             dateSelected = biggestDate;
           }
-          App.Plot1.mouseMoveOutOfCharts(dateSelected);
+
+          isMovingDown(dateSelected, d3.event.clientY, d3.event.clientX);
+          if (!isMouseDown) {
+            App.Plot1.mouseMoveOutOfCharts(dateSelected);
+          }
         } else {
           removeVerticalLines();
+          removeSelectionRect(null);
         }
       });
     }
@@ -190,27 +359,26 @@
     function createSlider() {
       timeIntervalSelected = [smallestDate, biggestDate];
 
-      let sliderWidth = sliderBoxPreferences.sliderWidth * svgWidth;
+      let sliderWidth = stackedAreaMarginWidth;
       let niceAxis = sliderBoxPreferences.displayNiceAxis;
       let tickHeight = sliderBoxPreferences.tickHeight;
       let contextHeight = sliderBoxPreferences.height;
-      let selectedRectHeight = sliderBoxPreferences.selectedRectHeight;
 
       //1)First we add the context and we draw a horizontal line so we see it well
-      let silderBox = svg
+      sliderBox = svg
         .append("g")
         .attr("class", "sliderBox")
         .attr(
           "transform",
           "translate(" +
-            0 +
+            stackedAreaMargin.left +
             "," +
             (svgHeight - sliderBoxPreferences.height) +
             ")"
         );
 
       //drawing the separation line
-      silderBox
+      sliderBox
         .append("line")
         .attr("x1", 0)
         .attr("y1", 0)
@@ -218,17 +386,17 @@
         .attr("y2", 0)
         .attr("class", "topLine");
       // Create a domain
-      var contextXScale = d3
+      brushXScale = d3
         .scaleTime()
         .range([0, sliderWidth]) //length of the slider
         .domain([smallestDate, biggestDate]);
 
       if (niceAxis) {
-        contextXScale = contextXScale.nice();
+        brushXScale = brushXScale.nice();
       }
       // a function thag generates a bunch of SVG elements.
       var contextAxis = d3
-        .axisBottom(contextXScale)
+        .axisBottom(brushXScale)
         .tickPadding(5) //height of the date on the axis
         .tickSizeInner(tickHeight)
         .tickSizeOuter(0);
@@ -240,25 +408,18 @@
       //.tickFormat(x => /[AEIOUY]/.test(x) ? x : "")
 
       //append the axis to the svg element
-      silderBox
+      sliderBox
         .append("g")
-        .attr(
-          "transform",
-          "translate(" +
-            (svgWidth - sliderWidth) / 2 +
-            "," +
-            contextHeight / 2 +
-            ")"
-        )
+        .attr("transform", "translate(" + 0 + "," + contextHeight / 2 + ")")
         .call(contextAxis);
 
       //move the ticks to position them in the middle of the horizontal line
-      silderBox
+      sliderBox
         .selectAll(".tick line")
         .attr("transform", "translate(0,-" + tickHeight / 2 + ")");
 
       //moves the text accordingly
-      silderBox
+      sliderBox
         .selectAll(".tick text")
         .attr("transform", "translate(0,-" + tickHeight / 2 + ")");
 
@@ -267,16 +428,16 @@
         const outerTickSize = tickHeight * 1.5;
         const yTop = (contextHeight - outerTickSize) / 2;
         const yBottom = (contextHeight + outerTickSize) / 2;
-        const xLeft = (svgWidth - sliderWidth) / 2;
+        const xLeft = 0;
         const xRight = xLeft + sliderWidth;
-        silderBox
+        sliderBox
           .append("line")
           .attr("x1", xLeft)
           .attr("y1", yTop)
           .attr("x2", xLeft)
           .attr("y2", yBottom)
           .attr("class", "outerTick");
-        silderBox
+        sliderBox
           .append("line")
           .attr("x1", xRight)
           .attr("y1", yTop)
@@ -287,12 +448,10 @@
 
       //Now we do the brush
       const minYBrushable = 0; //;(contextHeight-selectedRectHeight)/2
-      const maxYBrushable = (contextHeight + selectedRectHeight) / 2;
-      const minXBrushable =
-        contextXScale(smallestDate) + (svgWidth - sliderWidth) / 2;
-      const maxXBrushable =
-        contextXScale(biggestDate) + (svgWidth - sliderWidth) / 2;
-      var brush = d3
+      const maxYBrushable = contextHeight;
+      const minXBrushable = 0;
+      const maxXBrushable = stackedAreaMarginWidth;
+      bbrush = d3
         .brushX()
         .extent([
           //sets the brushable part
@@ -302,19 +461,15 @@
         ])
         .on("brush", cleanBrushInterval);
 
-      //The selection rectangle
-      silderBox
-        .append("g")
-        .attr("class", "xbrush")
-        .call(brush)
-        .selectAll("rect")
-        .attr("rx", 5);
-      let elem = silderBox
+      positionBrush(null, null);
+
+      let elem = sliderBox
         .select(".xbrush")
         .select(".overlay")
-        .on("click", function () {
+        .on("mousedown", function () {
           timeIntervalSelected = [smallestDate, biggestDate];
-          onBrush(timeIntervalSelected);
+          console.log("clicked inside the brush");
+          onBrush();
         });
 
       // Brush handler. Get time-range from a brush and pass it to the charts.
@@ -323,63 +478,95 @@
         //b is then an array of 2 dates: [from, to]
         var b =
           d3.event.selection === null
-            ? contextXScale.domain()
+            ? brushXScale.domain()
             : d3.event.selection.map((x) => {
-                return contextXScale.invert(x - (svgWidth - sliderWidth) / 2);
+                return brushXScale.invert(x);
               });
 
         //first we make sure that we cannot zoom too much
         if (minNumberOfPointInScreen > 0) {
-          //in case we have a limit
-          let differenceInTime = b[1].getTime() - b[0].getTime();
-          let minTimeInterval = getMinTimeIntervalWeCanSee();
-          if (differenceInTime < minTimeInterval) {
-            //in case the brush does not respect the limit
-            let middleTime = (b[1].getTime() + b[0].getTime()) / 2;
-
-            let timeToAdd = minTimeInterval / 2;
-            let upperDate = middleTime + timeToAdd;
-            let lowerDate = middleTime - timeToAdd;
-
-            if (upperDate > biggestDate.getTime()) {
-              let timeToShift = upperDate - biggestDate.getTime();
-              upperDate -= timeToShift;
-              lowerDate -= timeToShift;
-            } else if (lowerDate < smallestDate.getTime()) {
-              let timeToShift = smallestDate.getTime() - lowerDate;
-              upperDate += timeToShift;
-              lowerDate += timeToShift;
-            }
-            let small_date = new Date(lowerDate);
-            let big_date = new Date(upperDate);
-            b = [small_date, big_date];
-          }
-          let small_date = b[0];
-          let big_date = b[1];
-          //now we should adapt the brush!!
-
-          let brushSelected = silderBox.select(".xbrush");
-          let selection = brushSelected.select(".selection");
-          let leftSlider = brushSelected.select(".handle--w");
-          let rightSlider = brushSelected.select(".handle--e");
-
-          let widthForBrush =
-            contextXScale(big_date) - contextXScale(small_date);
-          let leftSliderWidth = leftSlider.attr("width");
-          let xForLeft =
-            contextXScale(small_date) +
-            (svgWidth - sliderWidth - leftSliderWidth) / 2;
-          let xForRight = xForLeft + widthForBrush;
-
-          selection.attr("width", widthForBrush);
-          selection.style("x", xForLeft + leftSliderWidth / 2);
-          leftSlider.style("x", xForLeft);
-          rightSlider.style("x", xForRight);
+          b = getCleanedInterval(b);
+          updateXBrushFromInterval(b);
         }
         timeIntervalSelected = b;
         onBrush();
       }
     } //end of createSlider
+
+    function positionBrush(fromDate, toDate) {
+      let position = null;
+      if (fromDate != null && toDate != null) {
+        let minX = brushXScale(fromDate);
+        let maxX = brushXScale(toDate);
+        position = [minX, maxX];
+      }
+      sliderBox.select(".xbrush").remove();
+      toCallForBrush = sliderBox
+        .append("g")
+        .attr("class", "xbrush")
+        .call(bbrush)
+        .call(bbrush.move, position)
+        .selectAll("rect");
+    }
+
+    function getCleanedInterval(b) {
+      if (minNumberOfPointInScreen > 0) {
+        //in case we have a limit
+        let differenceInTime = b[1].getTime() - b[0].getTime();
+        let minTimeInterval = getMinTimeIntervalWeCanSee();
+        if (differenceInTime < minTimeInterval) {
+          //in case the brush does not respect the limit
+          let middleTime = (b[1].getTime() + b[0].getTime()) / 2;
+
+          let timeToAdd = minTimeInterval / 2;
+          let upperDate = middleTime + timeToAdd;
+          let lowerDate = middleTime - timeToAdd;
+
+          if (upperDate > biggestDate.getTime()) {
+            let timeToShift = upperDate - biggestDate.getTime();
+            upperDate -= timeToShift;
+            lowerDate -= timeToShift;
+          } else if (lowerDate < smallestDate.getTime()) {
+            let timeToShift = smallestDate.getTime() - lowerDate;
+            upperDate += timeToShift;
+            lowerDate += timeToShift;
+          }
+          let small_date = new Date(lowerDate);
+          let big_date = new Date(upperDate);
+          b = [small_date, big_date];
+        }
+        let small_date = b[0];
+        let big_date = b[1];
+        return [small_date, big_date];
+      }
+      return b;
+    }
+
+    function updateXBrushFromInterval(b) {
+      let small_date = b[0];
+      let big_date = b[1];
+      //now we should adapt the brush!!
+
+      let brushSelected = sliderBox.select(".xbrush");
+      let selection = brushSelected.select(".selection");
+      let leftSlider = brushSelected.select(".handle--w");
+      let rightSlider = brushSelected.select(".handle--e");
+
+      var brushXScale = d3
+        .scaleTime()
+        .range([0, stackedAreaMarginWidth]) //length of the slider
+        .domain([smallestDate, biggestDate]);
+
+      let widthForBrush = brushXScale(big_date) - brushXScale(small_date);
+      let leftSliderWidth = leftSlider.attr("width");
+      let xForLeft = brushXScale(small_date); //+ (svgWidth -sliderWidth - leftSliderWidth)/2
+      let xForRight = xForLeft + widthForBrush;
+
+      selection.attr("width", widthForBrush);
+      selection.style("x", xForLeft + leftSliderWidth / 2);
+      leftSlider.style("x", xForLeft);
+      rightSlider.style("x", xForRight);
+    }
 
     class Chart {
       constructor(options) {
@@ -389,6 +576,7 @@
         this.yScale = getYscale();
         const stacksSupperpose = options.stacksSupperpose;
         const streamChartWhenSupperPosed = options.streamChartWhenSupperPosed;
+        const scaleSelected = options.scaleSelected;
 
         let localName = this.data.categories[this.id];
         let localId = this.id;
@@ -403,18 +591,47 @@
           .y0(
             function (d) {
               if (stacksSupperpose) {
-                let toAdd = 0;
                 if (streamChartWhenSupperPosed) {
+                  //steam chart
+                  let toAdd = 0;
                   let totalSum = d.values.slice().reduce((a, b) => a + b, 0);
                   let halfHeight = yS(totalSum / 2);
-                  toAdd = +stackedAreaMargin.height / 2 - halfHeight;
+                  toAdd = stackedAreaMargin.height / 2 - halfHeight;
+                  let values = d.values.slice(0, localId);
+                  let previousSum = values.reduce((a, b) => a + b, 0);
+                  return yS(previousSum) + toAdd;
+                } else {
+                  //normal stacked area
+                  if (scaleSelected == 0) {
+                    //no chart to put before an other
+                    let values = d.values.slice(0, localId);
+                    let previousSum = values.reduce((a, b) => a + b, 0);
+                    return yS(previousSum);
+                  } else {
+                    let values = d.values.slice();
+                    //extracting the value to but before
+                    let popped = values.splice(scaleSelected - 1, 1)[0];
+                    //putting the value before
+                    values.unshift(popped);
+                    //console.log(values)
+                    let sliceUntil = 0;
+                    if (localId != scaleSelected - 1) {
+                      if (localId < scaleSelected - 1) {
+                        sliceUntil = localId + 1;
+                      } else {
+                        sliceUntil = localId;
+                      }
+                    }
+                    //console.log(localId)
+                    //console.log("sliceUntil "+sliceUntil)
+                    values = values.slice(0, sliceUntil);
+                    //console.log(values)
+                    let previousSum = values.reduce((a, b) => a + b, 0);
+                    return yS(previousSum);
+                  }
                 }
-
-                let values = d.values.slice(0, localId);
-                let previousSum = values.reduce((a, b) => a + b, 0);
-
-                return yS(previousSum) + toAdd;
               } else {
+                //chart interleaving, everything from zero
                 return yS(0);
               }
             }.bind(this)
@@ -422,16 +639,41 @@
           .y1(
             function (d) {
               if (stacksSupperpose) {
-                let toAdd = 0;
                 if (streamChartWhenSupperPosed) {
+                  //steam chart
                   let totalSum = d.values.slice().reduce((a, b) => a + b, 0);
                   let halfHeight = yS(totalSum / 2);
-                  toAdd = +stackedAreaMargin.height / 2 - halfHeight;
+                  let toAdd = stackedAreaMargin.height / 2 - halfHeight;
+                  let values = d.values.slice(0, localId + 1);
+                  let previousSum = values.reduce((a, b) => a + b, 0);
+                  return yS(previousSum) + toAdd;
+                } else {
+                  //normal stacked area
+                  if (scaleSelected == 0) {
+                    let values = d.values.slice(0, localId + 1);
+                    let previousSum = values.reduce((a, b) => a + b, 0);
+                    return yS(previousSum);
+                  } else {
+                    let values = d.values.slice();
+                    let popped = values.splice(scaleSelected - 1, 1)[0];
+                    values.unshift(popped);
+
+                    let sliceUntil = 0;
+                    if (localId != scaleSelected - 1) {
+                      if (localId < scaleSelected - 1) {
+                        sliceUntil = localId + 1;
+                      } else {
+                        sliceUntil = localId;
+                      }
+                    }
+
+                    values = values.slice(0, sliceUntil + 1);
+                    let previousSum = values.reduce((a, b) => a + b, 0);
+                    return yS(previousSum); //+ toAdd
+                  }
                 }
-                let values = d.values.slice(0, localId + 1);
-                let previousSum = values.reduce((a, b) => a + b, 0);
-                return yS(previousSum) + toAdd;
               } else {
+                //chart interleaving, simply return the top value
                 return yS(d.values[this.id]);
               }
             }.bind(this)
@@ -508,7 +750,7 @@
     function getXscale() {
       return d3
         .scaleTime()
-        .range([0, stackedAreaMargin.width])
+        .range([0, stackedAreaMarginWidth])
         .domain(timeIntervalSelected);
     }
 
@@ -557,6 +799,12 @@
         .call(yAxis);
     }
 
+    function isADrag(x1, y1, x2, y2) {
+      let dragDistance = 5;
+      let norm = Math.pow(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2), 0.5);
+      return norm > dragDistance;
+    }
+
     function renderCharts(charts, withStroke) {
       removeCharts();
       chartsContainer = stackedArea
@@ -575,13 +823,45 @@
           chart.path.attr("stroke", "black").attr("stroke-width", "1");
         }
 
+        chart.path.on("mousemove", function (e) {
+          let coordinateX = d3.mouse(this)[0];
+          let dateSelected = getXscale().invert(coordinateX);
+          isMovingDown(dateSelected, d3.event.clientY, d3.event.clientX);
+        });
+
         let domElement = document.getElementById("chart_nb_" + chart.id);
         domElement.addEventListener("mousemove", function (e) {
+          //mouse is moving in a chart
+
+          //so the function moving outside a chart will not be called
           e.stopPropagation();
         });
 
         chart.path.on("mouseover", function (e) {
-          App.Plot1.mouseInChart(chart.id);
+          if (!isMouseDown) {
+            App.Plot1.mouseInChart(chart.id);
+          }
+        });
+
+        chart.path.on("click", function (e) {
+          //click inside a chart
+
+          if (
+            mouseDownCoordinates == null ||
+            !isADrag(
+              d3.event.clientX,
+              d3.event.clientY,
+              mouseDownCoordinates.x,
+              mouseDownCoordinates.y
+            )
+          ) {
+            if (chart.id == categorySelected) {
+              categorySelected = null;
+            } else {
+              categorySelected = chart.id;
+            }
+            App.Plot1.mouseClickedInPartOfChart(categorySelected);
+          }
         });
       });
     }
@@ -610,10 +890,6 @@
           .attr("d", line.upperPath)
           .attr("stroke", "black");
         line.upperPathElem = document.getElementById("chart_nb_" + line.id);
-        /*.on("mousemove", function(d,i) {
-        let coordinateX= d3.mouse(this)[0];
-        let dateSelected =xScale.invert(coordinateX)
-        onHover(chart.id, dateSelected)})*/
       });
     }
 
@@ -645,13 +921,24 @@
         .append("g")
         .attr("class", "chartFrames");
 
+      let mvb = App.Plot1DataModel.pixelStepWidth();
+
       orderTimeStamps.forEach((interleavings, n) => {
         let startingBorder = leftTimeBorder;
         interleavings.forEach((interleaving, i) => {
           let endingBorder = interleaving[1];
+          //trick to go beyong if the next border is too small
+          if (i + 1 < interleavings.length) {
+            let nextEndingBorder = interleavings[i + 1][1];
+            let nextWidth =
+              getXscale()(nextEndingBorder) - getXscale()(endingBorder);
+            if (nextWidth < mvb) {
+              endingBorder = nextEndingBorder;
+            }
+          }
 
           let widthX = getXscale()(endingBorder) - getXscale()(startingBorder);
-          if (widthX >= 1.5) {
+          if (widthX >= mvb) {
             partOfChartContainer
               .append("clipPath")
               .attr("id", "clip_for_frame_" + n + "_" + i)
@@ -679,12 +966,22 @@
               .attr("clip-path", "url(#clip_for_frame_" + n + "_" + i + ")")
               .attr("id", "partOfChart_" + n + "_" + i)
               .on("click", function (e) {
-                if (interleaving[0] == categorySelected) {
-                  categorySelected = null;
-                } else {
-                  categorySelected = interleaving[0];
+                if (
+                  mouseDownCoordinates == null ||
+                  !isADrag(
+                    d3.event.clientX,
+                    d3.event.clientY,
+                    mouseDownCoordinates.x,
+                    mouseDownCoordinates.y
+                  )
+                ) {
+                  if (interleaving[0] == categorySelected) {
+                    categorySelected = null;
+                  } else {
+                    categorySelected = interleaving[0];
+                  }
+                  App.Plot1.mouseClickedInPartOfChart(categorySelected);
                 }
-                App.Plot1.mouseClickedInPartOfChart(categorySelected);
               });
           }
           startingBorder = endingBorder;
@@ -779,27 +1076,47 @@
         path.on("mousemove", function (e) {
           let coordinateX = d3.mouse(this)[0];
           let dateSelected = getXscale().invert(coordinateX);
-          App.Plot1.mouseMoveInFrontChart(indexSelected, dateSelected);
+          if (!isMouseDown) {
+            App.Plot1.mouseMoveInFrontChart(indexSelected, dateSelected);
+          }
+          isMovingDown(dateSelected, d3.event.clientY, d3.event.clientX);
         });
 
-        path.on("click", function (e) {
-          let coordinateX = d3.mouse(this)[0];
-          let dateSelected = getXscale().invert(coordinateX);
-          let id = parseInt(path.attr("id").slice(-1));
-          if (id == categorySelected) {
-            categorySelected = null;
-          } else {
-            categorySelected = id;
+        path.on("click", function () {
+          if (
+            mouseDownCoordinates == null ||
+            !isADrag(
+              d3.event.clientX,
+              d3.event.clientY,
+              mouseDownCoordinates.x,
+              mouseDownCoordinates.y
+            )
+          ) {
+            let coordinateX = d3.mouse(this)[0];
+            let dateSelected = getXscale().invert(coordinateX);
+            let id = parseInt(path.attr("id").slice(-1));
+            if (id == categorySelected) {
+              categorySelected = null;
+            } else {
+              categorySelected = id;
+            }
+            App.Plot1.userSelectedCategory(categorySelected);
+            App.Plot1.mouseMoveInFrontChart(id, dateSelected);
           }
-          App.Plot1.userSelectedCategory(categorySelected);
-          App.Plot1.mouseMoveInFrontChart(id, dateSelected);
         });
 
         let domEl = document.getElementById("front_chart_nb_" + id);
         domEl.addEventListener("mousemove", function (e) {
-          if (id != lastIndexHighlighted && categorySelected == null) {
+          //moving in front chart
+          if (
+            id != lastIndexHighlighted &&
+            categorySelected == null &&
+            !isMouseDown
+          ) {
             addFrontCharts(id, charts);
           }
+
+          //wont call moving outside a chart
           e.stopPropagation();
         });
       });
@@ -820,10 +1137,11 @@
       let month = ("0" + (date.getMonth() + 1)).slice(-2);
       let day = ("0" + date.getDate()).slice(-2);
       let x = getXscale()(new Date(timestamp)) + stackedAreaMargin.left;
+      let y = stackedAreaMargin.top;
       svg
         .append("text")
         .attr("id", "currentDateDisplayed")
-        .attr("transform", "translate(" + x + "," + 19 + ")")
+        .attr("transform", "translate(" + x + "," + (y - 3) + ")")
         .text(day + "-" + month + "-" + year)
         .attr("fill", color)
         .attr("text-anchor", "middle");
@@ -857,25 +1175,25 @@
 
     function colorForIndex(index) {
       var colors = [
-        "#32a852",
-        "#2b90ab",
-        "#d1d138",
-        "#fa8350",
-        "#b32929",
-        "#493782",
-        "#968a60",
+        "#0DEDBA  ",
+        "#3097E9",
+        "#8328E1",
+        "#D3143C",
+        "#FD7D06",
+        "#F3FF00",
+        "#15E500 ",
       ];
       return colors[index % colors.length];
     }
     function colorForFadingIndex(index) {
       var colors = [
-        "#bcf5cc",
-        "#bce9f5",
-        "#fafac5",
-        "#fad5c5",
-        "#f0b9b9",
-        "#c4b6f2",
-        "#ede3c0",
+        "#2E5763",
+        "#234B70",
+        "#502F5D",
+        "#5D2F2F",
+        "#5D4D2F",
+        "#5B5D2F",
+        "#1E5B18",
       ];
       return colors[index % colors.length];
     }
@@ -906,6 +1224,7 @@
       makeTitlesLookNormal: makeTitlesLookNormal,
       addVerticalLines: addVerticalLines,
       colorForIndex: colorForIndex,
+      colorForFadingIndex: colorForFadingIndex,
       setCategorySelectedToNull: setCategorySelectedToNull,
       showFrameContainer: showFrameContainer,
       hideFrameContainer: hideFrameContainer,

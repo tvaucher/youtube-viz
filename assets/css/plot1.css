@@ -1,3 +1,11 @@
+.plot1 {
+  background-color: #262a2c;
+  color: #b1b1b1;
+  padding: 10px 0 10px 10px;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
 @media (min-width: 56em) {
   .plot1 {
     width: 140%;
@@ -11,19 +19,42 @@
   height: 450px;
 }
 
+#yAxisSelectorWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+#yAxisSelectorWrapper label {
+  margin-right: 15px;
+}
+
+#yAxisSelector {
+  background-color: #b1b1b1;
+  -webkit-appearance: none;
+}
+
 #plot1_title_container {
   justify-content: center;
   align-items: center;
   font-size: 12px;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 @media (min-width: 56em) {
   #plot1_title_container {
     display: flex;
-    font-size: 20px;
+    font-size: 18px;
     height: 40px;
   }
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+svg text::selection {
+  background: none;
 }
 
 #plot1_title_container div {
@@ -33,7 +64,7 @@
 }
 
 .stackedAreaBorder {
-  stroke: black;
+  stroke: none;
   stroke-opacity: 1;
   stroke-width: 1;
   fill: none;
@@ -58,29 +89,19 @@
   fill: none;
 }
 
+.sliderBox .xbrush rect.selection,
+.sliderBox .xbrush .handle {
+  /*stroke:red;*/
+  /*visibility: hidden;*/
+  height: 10px;
+  transform: translate(0px, 25px);
+}
+
 .upperLinesContainer path {
   fill: none;
-}
-
-.animOpacity {
-  animation: opacity_change 2s;
-}
-
-@keyframes opacity_change {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-/*g.stackedArea .upperPath{
   stroke: black;
-  stroke-width:1;
-  fill:none
-}*/
+  stroke-width: 1px;
+}
 
 .xAxis,
 .xAxis path,
@@ -94,9 +115,22 @@
   stroke: #b1b1b1;
 }
 
+#aboveRectContainer rect {
+  fill: rgba(255, 255, 255, 0.2);
+}
+#aboveRectContainer line {
+  stroke: #b1b1b1;
+}
+#aboveRectContainer rect.redWarning {
+  fill: rgba(255, 0, 0, 0.2);
+}
+#aboveRectContainer line.redWarning {
+  stroke: red;
+}
+
 #currentDateDisplayed {
   font-size: 14px;
-  font-family:  "PT Sans", Helvetica, Arial, sans-serif;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 /*------------AXIS OF THE TIME SLIDER-------------------*/
@@ -107,61 +141,3 @@
 .sliderBox text {
   stroke: #b1b1b1;
 }
-
-/*The line that divides the context from the above graph*/
-/*g.context>line{
-  stroke: blue;
-  stroke-opacity: 1;
-  stroke-width: 1;
-}*/
-/*The end ticks if the time interval displayed is not .nice()*/
-/*g.context .outerTick{
-  stroke: black;
-  stroke-opacity: 1;
-  stroke-width: 1;
-}*/
-
-/*horizontal axis line*/
-/*g.context g.axis path {
-	stroke-opacity: 1;
-  stroke: black;
-}*/
-
-/*vertical ticks*/
-/*g.context g.axis line {
-	stroke-opacity: 1;
-  /*stroke-width: 3;*/
-/*stroke: black;
-}*/
-
-/*text of axis (temporal labels)*/
-/*g.context g.axis text {
-  stroke-width: 0.3;
-  stroke: black;
-  text-anchor: middle;/* middle or start or end */
-/*}
-/*------------BRUSH-------------------*/
-/*g.context g.xbrush rect.selection{
-	fill: yellow;
-  cursor: ew-resize;
-  stroke: black;
-  /*height:16px;
-  transform: translate(0px,17px)*/
-/*}
-
-g.context g.xbrush rect.handle{
-  /*cursor: ew-resize;
-  stroke: black;
-  height:16px;
-  transform: translate(0px,17px)*/
-/*}
-g.stackedArea .verticalLines{
-  stroke: black;
-  stroke-width: 1;
-}
-
-g.stackedArea .chartFrames .partOfchart{
-  stroke: black;
-  stroke-width: 1;
-}
-*/
