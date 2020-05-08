@@ -12,6 +12,7 @@
 
     let minNumberOfPointInScreen = 20;
     let curveType = d3.curveLinear;
+
     //'curveMonotoneX','curveLinear','curveBasis', 'curveCardinal', 'curveStepBefore',...
 
     const stackedAreaMargin = {
@@ -43,6 +44,17 @@
     let bbrush = null;
     let brushXScale = null;
     let toCallForBrush = null;
+
+    // For the other plots
+    let isClicked = false;
+    let isTimeFrozen = false;
+
+    document.addEventListener("keypress", function (e) {
+      const char = String.fromCharCode(e.charCode);
+      if (char == "f") {
+        isTimeFrozen = !isTimeFrozen;
+      }
+    });
 
     //the revelant data needed
     let smallestDate = null;
@@ -294,6 +306,7 @@
         .attr("class", "stackedAreaBorder");
 
       svg.on("mousemove", function () {
+        if (isTimeFrozen) return;
         let coordinateX = d3.mouse(this)[0];
         let coordinateY = d3.mouse(this)[1];
         let tolerancePixel = 30;
@@ -319,6 +332,7 @@
           if (!isMouseDown) {
             App.Plot1.mouseMoveOutOfCharts(dateSelected);
           }
+          // HERE ADD UPDATE OF PLOTS
         } else {
           removeVerticalLines();
           removeSelectionRect(null);

@@ -7,6 +7,7 @@
 
     /*When this timer fires, it compute the chart interleaving order*/
     var heavyComputationTimer = null;
+    let isTimeFrozen = false;
 
     //the data from the csv file
     let data = null;
@@ -65,6 +66,10 @@
 
       if (char == "t") {
         setSteamGraph(!streamChartWhenSupperPosed);
+      }
+
+      if (char == "f") {
+        isTimeFrozen = !isTimeFrozen;
       }
     });
 
@@ -351,12 +356,14 @@
     }
 
     function mouseInChart(chartId) {
+      if (isTimeFrozen) return;
       if (categorySelected == null && stacksSupperpose) {
         //console.log("Mouse went inside chart "+ chartId)
         UI.addFrontCharts(chartId, charts);
       }
     }
     function mouseMoveOutOfCharts(atDate) {
+      if (isTimeFrozen) return;
       //console.log("Mouse move out of the charts at Date"+atDate)
       if (categorySelected == null) {
         UI.removeFrontCharts();
@@ -382,6 +389,7 @@
 
     function mouseMoveInFrontChart(chartId, atDate) {
       //  UI.colorForIndex(chartId)
+      if (isTimeFrozen) return;
       let color =
         categorySelected == null
           ? "#B1B1B1"
