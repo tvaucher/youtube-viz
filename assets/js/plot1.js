@@ -137,7 +137,7 @@
     }
 
     //load the csv file and call addElementsToStackedArea(),createSlider() when done
-    d3.csv("assets/data/score/score_week.csv", function (d) {
+    d3.csv("assets/data/weekly_score.csv", function (d) {
       data = model.prepareData(d);
       prepareYAxisSelector(data);
       maxYScore = stacksSupperpose

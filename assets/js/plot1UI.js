@@ -2,6 +2,7 @@
   "use strict";
   var App = window.App || {};
   let Plot1UI = (function () {
+    const table = App.Table;
     const containerName = "plot1_container";
     const titleContainerId = "plot1_title_container";
     let titles = null;
@@ -34,11 +35,30 @@
     let svg = null;
     let stackedArea = null;
     let stackedAreaBorderLines = null;
-    let timeIntervalSelected = null;
+    let timeIntervalSelected = new Proxy(
+      { value: null },
+      {
+        set: (target, key, value) => {
+          target[key] = value;
+          table.filterDateRange(value);
+          return true;
+        },
+      }
+    );
     let chartsContainer = null;
     let frontChartsPaths = null;
     let lastIndexHighlighted = null;
-    let categorySelected = null;
+    let categorySelected = new Proxy(
+      { value: null },
+      {
+        set: (target, key, value) => {
+          target[key] = value;
+          console.log(`${key} was changed to ${value}`)
+          table.filterCategory(value);
+          return true;
+        },
+      }
+    );
     let partOfChartContainer = null;
     let sliderBox = null;
     let bbrush = null;
@@ -70,7 +90,7 @@
       maxYscore = args.maxYscore;
       onBrush = function () {
         drawXAxis();
-        args.onBrush(timeIntervalSelected);
+        args.onBrush(timeIntervalSelected.value);
       };
     }
 
@@ -128,13 +148,16 @@
         let redWarning =
           cleanedInterval[0] != originalInterval[0] ||
           cleanedInterval[1] != originalInterval[1];
-        timeIntervalSelected = redWarning
+        timeIntervalSelected.value = redWarning
           ? [smallestDate, biggestDate]
           : cleanedInterval;
         if (redWarning) {
           positionBrush(null, null);
         } else {
-          positionBrush(timeIntervalSelected[0], timeIntervalSelected[1]);
+          positionBrush(
+            timeIntervalSelected.value[0],
+            timeIntervalSelected.value[1]
+          );
         }
       }
       //console.log("SHOULD ZOOM "+shouldZoom)
@@ -358,12 +381,12 @@
         });
 
         title.addEventListener("click", function () {
-          if (i == categorySelected) {
-            categorySelected = null;
+          if (i == categorySelected.value) {
+            categorySelected.value = null;
           } else {
-            categorySelected = i;
+            categorySelected.value = i;
           }
-          App.Plot1.userSelectedCategory(categorySelected);
+          App.Plot1.userSelectedCategory(categorySelected.value);
         });
         titles.push(title);
       });
@@ -371,7 +394,7 @@
 
     /*Create the slider box with the brush*/
     function createSlider() {
-      timeIntervalSelected = [smallestDate, biggestDate];
+      timeIntervalSelected.value = [smallestDate, biggestDate];
 
       let sliderWidth = stackedAreaMarginWidth;
       let niceAxis = sliderBoxPreferences.displayNiceAxis;
@@ -481,7 +504,7 @@
         .select(".xbrush")
         .select(".overlay")
         .on("mousedown", function () {
-          timeIntervalSelected = [smallestDate, biggestDate];
+          timeIntervalSelected.value = [smallestDate, biggestDate];
           console.log("clicked inside the brush");
           onBrush();
         });
@@ -502,7 +525,7 @@
           b = getCleanedInterval(b);
           updateXBrushFromInterval(b);
         }
-        timeIntervalSelected = b;
+        timeIntervalSelected.value = b;
         onBrush();
       }
     } //end of createSlider
@@ -765,7 +788,7 @@
       return d3
         .scaleTime()
         .range([0, stackedAreaMarginWidth])
-        .domain(timeIntervalSelected);
+        .domain(timeIntervalSelected.value);
     }
 
     function getYscale() {
@@ -869,12 +892,12 @@
               mouseDownCoordinates.y
             )
           ) {
-            if (chart.id == categorySelected) {
-              categorySelected = null;
+            if (chart.id == categorySelected.value) {
+              categorySelected.value = null;
             } else {
-              categorySelected = chart.id;
+              categorySelected.value = chart.id;
             }
-            App.Plot1.mouseClickedInPartOfChart(categorySelected);
+            App.Plot1.mouseClickedInPartOfChart(categorySelected.value);
           }
         });
       });
@@ -989,12 +1012,12 @@
                     mouseDownCoordinates.y
                   )
                 ) {
-                  if (interleaving[0] == categorySelected) {
-                    categorySelected = null;
+                  if (interleaving[0] == categorySelected.value) {
+                    categorySelected.value = null;
                   } else {
-                    categorySelected = interleaving[0];
+                    categorySelected.value = interleaving[0];
                   }
-                  App.Plot1.mouseClickedInPartOfChart(categorySelected);
+                  App.Plot1.mouseClickedInPartOfChart(categorySelected.value);
                 }
               });
           }
@@ -1109,12 +1132,12 @@
             let coordinateX = d3.mouse(this)[0];
             let dateSelected = getXscale().invert(coordinateX);
             let id = parseInt(path.attr("id").slice(-1));
-            if (id == categorySelected) {
-              categorySelected = null;
+            if (id == categorySelected.value) {
+              categorySelected.value = null;
             } else {
-              categorySelected = id;
+              categorySelected.value = id;
             }
-            App.Plot1.userSelectedCategory(categorySelected);
+            App.Plot1.userSelectedCategory(categorySelected.value);
             App.Plot1.mouseMoveInFrontChart(id, dateSelected);
           }
         });
@@ -1124,7 +1147,7 @@
           //moving in front chart
           if (
             id != lastIndexHighlighted &&
-            categorySelected == null &&
+            categorySelected.value == null &&
             !isMouseDown
           ) {
             addFrontCharts(id, charts);
@@ -1184,7 +1207,7 @@
     }
 
     function setCategorySelectedToNull() {
-      categorySelected = null;
+      categorySelected.value = null;
     }
 
     function colorForIndex(index) {

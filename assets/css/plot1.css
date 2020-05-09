@@ -1,7 +1,7 @@
 .plot1 {
   background-color: #262a2c;
   color: #b1b1b1;
-  padding: 10px 0 10px 10px;
+  padding: 10px 0;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: 14px;
 }
@@ -17,6 +17,10 @@
 #plot1_container {
   /*border: 1px solid blue;*/
   height: 450px;
+}
+
+.plotCheckBoxes {
+  padding: 0 0 20px 0;
 }
 
 #yAxisSelectorWrapper {
@@ -140,4 +144,35 @@ svg text::selection {
 .sliderBox .outerTick,
 .sliderBox text {
   stroke: #b1b1b1;
+}
+
+/* DATA TABLE */
+
+#helper_container {
+  display: flex;
+}
+
+#table_container {
+  width: 40%;
+  height: 300px;
+  padding: 0 1em;
+}
+
+#plot2_container {
+  flex-grow: 1;
+  height: 300px;
+}
+#tableTitle {
+  font-size: 16px;
+  padding: 5px 0 10px;
+  font-weight: bold;
+}
+
+.dc-table-section {
+  display: none;
+}
+
+.youtubeIcon {
+  margin: 0;
+  padding: 5px 5px;
 }
