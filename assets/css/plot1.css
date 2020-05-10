@@ -153,7 +153,7 @@ svg text::selection {
 }
 
 #table_container {
-  width: 40%;
+  width: 45%;
   height: 300px;
   padding: 0 1em;
 }
@@ -162,10 +162,23 @@ svg text::selection {
   flex-grow: 1;
   height: 300px;
 }
+
 #tableTitle {
-  font-size: 16px;
+  /*font-size: 16px;*/
   padding: 5px 0 10px;
   font-weight: bold;
+}
+
+#dcTable {
+  table-layout: fixed;
+  width: 100%;
+  white-space: nowrap;
+}
+
+#dcTable td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dc-table-section {

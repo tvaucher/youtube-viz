@@ -2,11 +2,13 @@
   "use strict";
   var App = window.App || {};
   let Table = (function () {
-    const bestVideosTable = new dc.DataTable("#table_container");
     const dateFormatParser = d3.timeParse("%Y-%m-%d");
-    const dateFormat = d3.timeFormat("%x");
+    const dateFormat = d3.timeFormat("%d-%m-%Y");
     const numberFormat = (number) =>
       d3.format(".4s")(number).replace(/G/, "Bn");
+
+    // DOM element
+    const bestVideosTable = new dc.DataTable("#dcTable");
 
     // Data variables
     let topVideos = null;
@@ -75,6 +77,7 @@
       if (!categoryDimension || category === selectedCategory) return;
       selectedCategory = category === null ? null : categories[category];
       categoryDimension.filter(selectedCategory);
+      updateTitle();
       dc.redrawAll();
       return selectedCategory;
     }
@@ -83,8 +86,23 @@
       if (!dateDimension || dateRange === selectedTimeInterval) return;
       selectedTimeInterval = dateRange;
       dateDimension.filter(selectedTimeInterval);
+      updateTitle();
       dc.redrawAll();
       return selectedTimeInterval;
+    }
+
+    function updateTitle() {
+      let catText =
+        selectedCategory === null ? "all categories" : selectedCategory;
+      let timeText =
+        selectedTimeInterval === null
+          ? "for all time"
+          : Array.isArray(selectedTimeInterval)
+          ? `from ${dateFormat(selectedTimeInterval[0])} to ${dateFormat(
+              selectedTimeInterval[1]
+            )}`
+          : `for ${dateFormat(selectedTimeInterval)}`;
+      d3.select("#tableTitle").text(`Top ${catText} videos ${timeText}`);
     }
 
     return {

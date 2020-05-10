@@ -53,7 +53,6 @@
       {
         set: (target, key, value) => {
           target[key] = value;
-          console.log(`${key} was changed to ${value}`)
           table.filterCategory(value);
           return true;
         },
