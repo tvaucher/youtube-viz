@@ -6,7 +6,17 @@
     const dateFormat = d3.timeFormat("%d-%m-%Y");
     const numberFormat = (number) =>
       d3.format(".4s")(number).replace(/G/, "Bn");
-
+    const hhmmss = (secs) => {
+      let minutes = Math.floor(secs / 60);
+      secs = secs % 60;
+      const hours = Math.floor(minutes / 60);
+      minutes = minutes % 60;
+      return hours > 0
+        ? `${hours}h ${minutes}min ${secs}sec`
+        : minutes > 0
+        ? `${minutes}min ${secs}sec`
+        : `${secs}sec`;
+    };
     // DOM element
     const bestVideosTable = new dc.DataTable("#dcTable");
 
@@ -34,6 +44,8 @@
     d3.json("assets/data/top_videos.json", (data) => {
       data.forEach((d) => {
         d.date = dateFormatParser(d.date);
+        d.upload_date = dateFormatParser(d.upload_date);
+        d.thumbnail = `<a href="https://www.youtube.com/watch?v=${d.display_id}"><img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video"><span class="videoTitle">${d.title}</span></a>`;
       });
 
       topVideos = crossfilter(data);
@@ -51,23 +63,41 @@
         .dimension(viewCountDimension)
         .columns([
           {
-            label: "Date",
-            format: (d) => dateFormat(d.date),
+            label: "Rank",
+            format: (d) => '<span class="counterCell"></span>',
           },
-          "categories",
+          {
+            label: "Date",
+            format: (d) => dateFormat(d.upload_date),
+          },
+          {
+            label: "Video",
+            format: (d) => d.thumbnail,
+          },
+          {
+            label: "Category",
+            format: (d) => d.categories,
+          },
           {
             label: "Views",
             format: (d) => numberFormat(d.view_count),
           },
           {
-            label: "Video",
-            format: (d) =>
-              `<a href="https://www.youtube.com/watch?v=${d.display_id}"><img class="youtubeIcon" height="30px" src="assets/img/YouTube_icon.svg" alt="Video"></a>`,
+            label: "Likes",
+            format: (d) => numberFormat(d.like_count),
+          },
+          {
+            label: "Dislikes",
+            format: (d) => numberFormat(d.dislike_count),
+          },
+          {
+            label: "Duration",
+            format: (d) => hhmmss(d.duration),
           },
         ])
         .sortBy((d) => d.view_count)
         .order(d3.descending)
-        .size(5)
+        .size(50)
         .on("renderlet", (table) => {
           table.selectAll(".dc-table-group").classed("info", true);
         });
@@ -102,7 +132,7 @@
               selectedTimeInterval[1]
             )}`
           : `for ${dateFormat(selectedTimeInterval)}`;
-      d3.select("#tableTitle").text(`Top ${catText} videos ${timeText}`);
+      d3.select("#tableTitle").text(`Top 50 ${catText} videos ${timeText}`);
     }
 
     return {

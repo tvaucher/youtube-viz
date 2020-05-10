@@ -2,7 +2,7 @@
 layout: default
 title: Home
 permalink: /
-as_viz: true
+has_viz: true
 ---
 <div>
   <h1>YouTube Data Visualization</h1>
@@ -35,10 +35,10 @@ as_viz: true
     </div>
     <div id="helper_container">
       <div id="table_container">
-        <div id="tableTitle">Top all categories videos for all time</div>
+        <div id="tableTitle">Top 50 all categories videos for all time</div>
         <table id="dcTable"></table>
       </div>
-      <div id="plot2_container">Foo Bar Baz</div>
+      <div id="plot2_container"></div>
     </div>
   </div>
   <h2>Comments</h2>
@@ -51,6 +51,7 @@ as_viz: true
 </div>
 
 <script type="module" src="{{ site.baseurl }}/assets/js/table.js"></script>
+<!--<script type="module" src="{{ site.baseurl }}/assets/js/helperPlot.js"></script>-->
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1DataModel.js"></script>
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1UI.js"></script>
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1.js"></script>
