@@ -45,7 +45,7 @@
       data.forEach((d) => {
         d.date = dateFormatParser(d.date);
         d.upload_date = dateFormatParser(d.upload_date);
-        d.thumbnail = `<a href="https://www.youtube.com/watch?v=${d.display_id}"><img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video"><span class="videoTitle">${d.title}</span></a>`;
+        d.thumbnail = `<a class="embedVideo" href="https://www.youtube.com/watch?v=${d.display_id}"><img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video"><span class="videoTitle">${d.title}</span></a>`;
       });
 
       topVideos = crossfilter(data);
@@ -55,6 +55,7 @@
       viewCountDimension = topVideos.dimension((d) => d.view_count);
 
       initTable();
+      initEmbedVid();
       dc.renderAll();
     });
 
@@ -103,12 +104,25 @@
         });
     }
 
+    function initEmbedVid() {
+      $(document).ready(function () {
+        $(".embedVideo").magnificPopup({
+          type: "iframe",
+          mainClass: "mfp-fade",
+          removalDelay: 300,
+          preloader: false,
+          fixedContentPos: true,
+        });
+      });
+    }
+
     function filterCategory(category) {
       if (!categoryDimension || category === selectedCategory) return;
       selectedCategory = category === null ? null : categories[category];
       categoryDimension.filter(selectedCategory);
       updateTitle();
       dc.redrawAll();
+      initEmbedVid();
       return selectedCategory;
     }
 
@@ -118,6 +132,7 @@
       dateDimension.filter(selectedTimeInterval);
       updateTitle();
       dc.redrawAll();
+      initEmbedVid();
       return selectedTimeInterval;
     }
 
