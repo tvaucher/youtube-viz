@@ -57,6 +57,11 @@ svg text {
   -ms-user-select: none;
   user-select: none;
 }
+
+#axisLabel {
+  fill: #b1b1b1;
+}
+
 svg text::selection {
   background: none;
 }

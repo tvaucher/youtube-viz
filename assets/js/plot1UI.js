@@ -18,7 +18,7 @@
 
     const stackedAreaMargin = {
       top: 15,
-      left: 95,
+      left: 70,
       right: 40,
       height: 350,
     };
@@ -326,6 +326,16 @@
         .attr("x2", stackedAreaMarginWidth)
         .attr("y2", stackedAreaMargin.height)
         .attr("class", "stackedAreaBorder");
+      //xAxixLabel
+      svg
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", stackedAreaMargin.left / 4)
+        .attr("x", 0 - stackedAreaMargin.height / 2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .attr("id", "axisLabel")
+        .text("Weekly Score per Category");
 
       svg.on("mousemove", function () {
         if (isTimeFrozen) return;
