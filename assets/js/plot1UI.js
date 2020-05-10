@@ -1195,24 +1195,26 @@
 
     function addVerticalLines(timestamps, color, dateToDisplay) {
       removeVerticalLines();
-      addDate(timestamps[0], dateToDisplay, color);
+      let goodTimeStamp = Math.min(
+        timeIntervalSelected.value[1].getTime(),
+        Math.max(timeIntervalSelected.value[0].getTime(), timestamps[0])
+      );
+      addDate(goodTimeStamp, dateToDisplay, color);
       let linesContainer = stackedArea
         .append("g")
         .attr("class", "verticalLinesContainer");
 
-      timestamps.forEach((t) => {
-        let y = 0;
-        let Y = stackedAreaMargin.height;
-        let x = getXscale()(new Date(t));
-        linesContainer
-          .append("line")
-          .attr("x1", x)
-          .attr("y1", y)
-          .attr("x2", x)
-          .attr("y2", Y)
-          .attr("class", "verticalLines")
-          .attr("stroke", color);
-      });
+      let y = 0;
+      let Y = stackedAreaMargin.height;
+      let x = getXscale()(new Date(goodTimeStamp));
+      linesContainer
+        .append("line")
+        .attr("x1", x)
+        .attr("y1", y)
+        .attr("x2", x)
+        .attr("y2", Y)
+        .attr("class", "verticalLines")
+        .attr("stroke", color);
     }
 
     function setCategorySelectedToNull() {
