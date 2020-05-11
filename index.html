@@ -35,11 +35,16 @@ has_viz: true
     </span>
   </div>
   <div id="helper_container">
-    <div id="table_container">
+    <button type="button" class="collapsible">Show top videos table</button>
+    <div id="table_container" class="collapsible-content">
       <div id="tableTitle">Top 50 all categories videos for all time</div>
       <table id="dcTable"></table>
     </div>
-    <div id="plot2_container"></div>
+    <div id="plot2_container">
+      <div id="duration_plot">
+        <div id="durationTitle">Duration distribution of all categories videos for all time</div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="content-text">
@@ -53,7 +58,24 @@ has_viz: true
 </div>
 
 <script type="module" src="{{ site.baseurl }}/assets/js/table.js"></script>
-<!--<script type="module" src="{{ site.baseurl }}/assets/js/helperPlot.js"></script>-->
+<script type="module" src="{{ site.baseurl }}/assets/js/helperPlot.js"></script>
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1DataModel.js"></script>
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1UI.js"></script>
 <script type="module" src="{{ site.baseurl }}/assets/js/plot1.js"></script>
+<script>
+  let coll = document.getElementsByClassName("collapsible");
+  var i;
+
+  for (let i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function () {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+  }
+
+</script>
