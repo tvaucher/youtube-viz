@@ -56,7 +56,7 @@
 
       initTable();
       initEmbedVid();
-      dc.renderAll();
+      bestVideosTable.render();
     });
 
     function initTable() {
@@ -121,7 +121,7 @@
       selectedCategory = category === null ? null : categories[category];
       categoryDimension.filter(selectedCategory);
       updateTitle();
-      dc.redrawAll();
+      bestVideosTable.redraw();
       initEmbedVid();
       return selectedCategory;
     }
@@ -131,7 +131,7 @@
       selectedTimeInterval = dateRange;
       dateDimension.filter(selectedTimeInterval);
       updateTitle();
-      dc.redrawAll();
+      bestVideosTable.redraw();
       initEmbedVid();
       return selectedTimeInterval;
     }
