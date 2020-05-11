@@ -4,43 +4,45 @@ title: Home
 permalink: /
 has_viz: true
 ---
-<div>
+<div class="content-text">
   <h1>YouTube Data Visualization</h1>
   <p>
     Welcome. This is an early prototype of the YouTube Viz for the 2<sup>nd</sup> Milestone.
   </p>
-  <div class="plot1">
-    <div id="plot1_title_container">
-    </div>
-    <div id="yAxisSelectorWrapper">
-      <label for="yAxisSelector">Scale Y axis perfectly for:</label>
-      <select name="yAxisSelector" id="yAxisSelector">
-      </select>
-    </div>
-    <div id="plot1_container">
-    </div>
-    <div class="plot1CheckBoxes">
-      <span style="display:none;">
-        <input type="checkbox" name="freezeYAxis" id="freezeYAxis" />
-        <label for="freezeYAxis">Freeze Y axis</label>
-      </span>
-      <span>
-        <input type="checkbox" name="interLeavingXb" id="interLeavingXb" />
-        <label for="interLeavingXb">See charts interleaving </label>
-      </span>
-      <span id="streamGraphXbSpan">
-        <input type="checkbox" name="streamGraphXb" checked id="streamGraphXb" />
-        <label for="streamGraphXb">See as stream graph </label>
-      </span>
-    </div>
-    <div id="helper_container">
-      <div id="table_container">
-        <div id="tableTitle">Top 50 all categories videos for all time</div>
-        <table id="dcTable"></table>
-      </div>
-      <div id="plot2_container"></div>
-    </div>
+</div>
+<div class="plot1">
+  <div id="plot1_title_container">
   </div>
+  <div id="yAxisSelectorWrapper">
+    <label for="yAxisSelector">Scale Y axis perfectly for:</label>
+    <select name="yAxisSelector" id="yAxisSelector">
+    </select>
+  </div>
+  <div id="plot1_container">
+  </div>
+  <div class="plot1CheckBoxes">
+    <span style="display:none;">
+      <input type="checkbox" name="freezeYAxis" id="freezeYAxis" />
+      <label for="freezeYAxis">Freeze Y axis</label>
+    </span>
+    <span>
+      <input type="checkbox" name="interLeavingXb" id="interLeavingXb" />
+      <label for="interLeavingXb">See charts interleaving </label>
+    </span>
+    <span id="streamGraphXbSpan">
+      <input type="checkbox" name="streamGraphXb" checked id="streamGraphXb" />
+      <label for="streamGraphXb">See as stream graph </label>
+    </span>
+  </div>
+  <div id="helper_container">
+    <div id="table_container">
+      <div id="tableTitle">Top 50 all categories videos for all time</div>
+      <table id="dcTable"></table>
+    </div>
+    <div id="plot2_container"></div>
+  </div>
+</div>
+<div class="content-text">
   <h2>Comments</h2>
   <p>
     The plots currently represent the evolution of the score of each category over time. The formula for it is described
