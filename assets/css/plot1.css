@@ -193,12 +193,12 @@ table {
   border-spacing: 0;
   border: 2px solid #b1b1b1;
   margin: auto;
-  counter-reset: tableCount;     
+  counter-reset: tableCount;
 }
 
-.counterCell:before {              
-    content: counter(tableCount); 
-    counter-increment: tableCount; 
+.counterCell:before {
+  content: counter(tableCount);
+  counter-increment: tableCount;
 }
 
 thead,
@@ -231,7 +231,20 @@ thead {
   /* fallback */
   width: 97%;
   /* minus scroll bar width */
+  width: -webkit-calc(100% - 17px);
+  width: -moz-calc(100% - 17px);
   width: calc(100% - 17px);
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 17px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
 
 tbody {
@@ -254,11 +267,13 @@ tbody td {
   vertical-align: middle;
 }
 
-#dcTable tr th:nth-child(1), ._0 {
+#dcTable tr th:nth-child(1),
+._0 {
   width: 5%;
 }
 
-#dcTable tr th:nth-child(3), ._2 {
+#dcTable tr th:nth-child(3),
+._2 {
   width: 40%;
 }
 
@@ -267,7 +282,8 @@ tbody td {
   padding: 0.25rem 0.3rem;
 }
 
-#dcTable tr th:nth-child(4), ._3 {
+#dcTable tr th:nth-child(4),
+._3 {
   width: 15%;
 }
 
@@ -290,7 +306,6 @@ thead th:last-child {
 .videoTitle {
   padding-left: 5px;
 }
-
 
 /*#dcTable {
   table-layout: fixed;
