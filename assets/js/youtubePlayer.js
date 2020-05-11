@@ -158,8 +158,7 @@
 
       makeAppearYoutubePlayerBox()
     }
-
-
+    
     return {
       makeAppearYoutubePlayerBox:makeAppearYoutubePlayerBox,
     }

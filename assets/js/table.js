@@ -46,6 +46,7 @@
         d.date = dateFormatParser(d.date);
         d.upload_date = dateFormatParser(d.upload_date);
         d.thumbnail = `<a class="embedVideo" href="https://www.youtube.com/watch?v=${d.display_id}"><img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video"><span class="videoTitle">${d.title}</span></a>`;
+
       });
 
       topVideos = crossfilter(data);
