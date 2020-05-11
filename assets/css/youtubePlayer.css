@@ -1,0 +1,53 @@
+#youtubePlayerBox{
+  /*display: none;*/
+  position: fixed;
+  background-color: pink;
+  padding: 10px;
+  cursor: grab;
+}
+
+#youtubePlayerBox.grabbed{
+  cursor: grabbing;
+}
+
+#youtubePlayerBox .corner{
+  /*display: none;*/
+  position: absolute;
+  width:20px;
+  height: 20px;
+  background-color: blue;
+
+}
+
+#youtubePlayerBox .topRight{
+  top:0px;
+  right:0px;
+  cursor: nesw-resize;
+}
+#youtubePlayerBox .topLeft{
+  top:0px;
+  left:0px;
+  background-color: red;
+  cursor: auto;
+  z-index: 1;
+}
+
+#youtubePlayerBox .bottomLeft{
+  bottom:0px;
+  left:0px;
+  cursor: nesw-resize;
+}
+
+#youtubePlayerBox .bottomRight{
+  bottom:0px;
+  right:0px;
+  cursor: nwse-resize;
+}
+
+#youtubePlayerBox iframe{
+  /*display: none;*/
+  position: relative;
+  width:100%;
+  height: 100%;
+
+}
