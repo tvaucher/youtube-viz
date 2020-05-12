@@ -5,17 +5,17 @@
     const dateFormatParser = d3.timeParse("%Y-%m-%d");
     const dateFormat = d3.timeFormat("%d-%m-%Y");
     const numberFormat = (number) =>
-      d3.format(".4s")(number).replace(/G/, "Bn");
+    d3.format(".4s")(number).replace(/G/, "Bn");
     const hhmmss = (secs) => {
       let minutes = Math.floor(secs / 60);
       secs = secs % 60;
       const hours = Math.floor(minutes / 60);
       minutes = minutes % 60;
       return hours > 0
-        ? `${hours}h ${minutes}min ${secs}sec`
-        : minutes > 0
-        ? `${minutes}min ${secs}sec`
-        : `${secs}sec`;
+      ? `${hours}h ${minutes}min ${secs}sec`
+      : minutes > 0
+      ? `${minutes}min ${secs}sec`
+      : `${secs}sec`;
     };
     // DOM element
     const bestVideosTable = new dc.DataTable("#dcTable");
@@ -45,7 +45,7 @@
       data.forEach((d) => {
         d.date = dateFormatParser(d.date);
         d.upload_date = dateFormatParser(d.upload_date);
-        d.thumbnail = `<a class="showVideoOnClick" data-song-id=${d.display_id}>
+        d.thumbnail = `<a class="showVideoOnClick" data-song-id=${d.display_id} data-upload-timestamp=${d.date.getTime()}>
         <img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video">
         <span class="videoTitle">${d.title}</span>
         </a>`;
@@ -65,47 +65,47 @@
 
     function initTable() {
       bestVideosTable
-        .dimension(viewCountDimension)
-        .columns([
-          {
-            label: "Rank",
-            format: (d) => '<span class="counterCell"></span>',
-          },
-          {
-            label: "Date",
-            format: (d) => dateFormat(d.upload_date),
-          },
-          {
-            label: "Video",
-            format: (d) => d.thumbnail,
-          },
-          {
-            label: "Category",
-            format: (d) => d.categories,
-          },
-          {
-            label: "Views",
-            format: (d) => numberFormat(d.view_count),
-          },
-          {
-            label: "Likes",
-            format: (d) => numberFormat(d.like_count),
-          },
-          {
-            label: "Dislikes",
-            format: (d) => numberFormat(d.dislike_count),
-          },
-          {
-            label: "Duration",
-            format: (d) => hhmmss(d.duration),
-          },
-        ])
-        .sortBy((d) => d.view_count)
-        .order(d3.descending)
-        .size(50)
-        .on("renderlet", (table) => {
-          table.selectAll(".dc-table-group").classed("info", true);
-        });
+      .dimension(viewCountDimension)
+      .columns([
+        {
+          label: "Rank",
+          format: (d) => '<span class="counterCell"></span>',
+        },
+        {
+          label: "Date",
+          format: (d) => dateFormat(d.upload_date),
+        },
+        {
+          label: "Video",
+          format: (d) => d.thumbnail,
+        },
+        {
+          label: "Category",
+          format: (d) => d.categories,
+        },
+        {
+          label: "Views",
+          format: (d) => numberFormat(d.view_count),
+        },
+        {
+          label: "Likes",
+          format: (d) => numberFormat(d.like_count),
+        },
+        {
+          label: "Dislikes",
+          format: (d) => numberFormat(d.dislike_count),
+        },
+        {
+          label: "Duration",
+          format: (d) => hhmmss(d.duration),
+        },
+      ])
+      .sortBy((d) => d.view_count)
+      .order(d3.descending)
+      .size(50)
+      .on("renderlet", (table) => {
+        table.selectAll(".dc-table-group").classed("info", true);
+      });
     }
 
     function initEmbedVid() {
@@ -116,6 +116,10 @@
           event.preventDefault();
           e.stopPropagation();
           App.YoutubePlayer.makeAppearYoutubePlayerBox(songId);
+        });
+        d.addEventListener("mousemove", function (e) {
+          let uploadTS = d.getAttribute("data-upload-timestamp");
+          App.Plot1.updateVerticalLineInUI(uploadTS)
         });
       });
     }
@@ -142,15 +146,15 @@
 
     function updateTitle() {
       let catText =
-        selectedCategory === null ? "all categories" : selectedCategory;
+      selectedCategory === null ? "all categories" : selectedCategory;
       let timeText =
-        selectedTimeInterval === null
-          ? "for all time"
-          : Array.isArray(selectedTimeInterval)
-          ? `from ${dateFormat(selectedTimeInterval[0])} to ${dateFormat(
-              selectedTimeInterval[1]
-            )}`
-          : `for ${dateFormat(selectedTimeInterval)}`;
+      selectedTimeInterval === null
+      ? "for all time"
+      : Array.isArray(selectedTimeInterval)
+      ? `from ${dateFormat(selectedTimeInterval[0])} to ${dateFormat(
+        selectedTimeInterval[1]
+      )}`
+      : `for ${dateFormat(selectedTimeInterval)}`;
       d3.select("#tableTitle").text(`Top 50 ${catText} videos ${timeText}`);
     }
 

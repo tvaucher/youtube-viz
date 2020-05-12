@@ -390,22 +390,22 @@
     function mouseMoveInFrontChart(chartId, atDate) {
       //  UI.colorForIndex(chartId)
       if (isTimeFrozen) return;
+      updateVerticalLineInUI(atDate.getTime())
+
+    }
+
+    function updateVerticalLineInUI(timestamp){
       let color =
         categorySelected == null
           ? "#B1B1B1"
           : UI.colorForIndex(categorySelected);
-      let closestIndex = model.getClosestIndex(atDate, data);
+      let closestIndex = model.getClosestIndex(new Date(timestamp), data);
       UI.addVerticalLines(
-        [atDate.getTime()],
+        [timestamp],
         color,
         data.values[closestIndex].date
       );
-      /* console.log(
-        "Should display info for date " +
-          atDate +
-          " and category " +
-          categorySelected
-      ); */
+
     }
 
     function mouseClickedInPartOfChart(chartId) {
@@ -423,6 +423,7 @@
       mouseMoveOutOfCharts: mouseMoveOutOfCharts,
       userSelectedCategory: userSelectedCategory,
       mouseClickedInPartOfChart: mouseClickedInPartOfChart,
+      updateVerticalLineInUI:updateVerticalLineInUI,
     };
   })();
   App.Plot1 = Plot1;
