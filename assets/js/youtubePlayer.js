@@ -1,5 +1,3 @@
----
----
 (function (window) {
   "use strict";
   var App = window.App || {};
@@ -28,6 +26,7 @@
 
     youtubePlayerBox.addEventListener("mousedown", function (e) {
       //console.log("started to drag")
+      lastPosition = getActualPosition()
       insideClick = {
         x: e.clientX - lastPosition.x,
         y: e.clientY - lastPosition.y,
@@ -40,6 +39,7 @@
     Array.prototype.forEach.call(resizers, function (r) {
       r.addEventListener("mousedown", function (e) {
         //console.log("started to resize")
+        lastPosition = getActualPosition()
         insideClick = {
           x: e.clientX - lastPosition.x,
           y: e.clientY - lastPosition.y,
@@ -123,6 +123,7 @@
       youtubePlayerBox.style.top = lastPosition.y == null ? null :lastPosition.y + "px";
       youtubePlayerBox.style.width = lastPosition.width == null ? null : lastPosition.width + "px";
       youtubePlayerBox.style.height = lastPosition.height == null ? null :lastPosition.height + "px";
+      youtubePlayerBox.style.display = "block"
 
       if (videoId != undefined && videoId != null) {
         let newUrl = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&origin={{ site.url }}";
@@ -165,6 +166,17 @@
       lastPosition.y = isClickTop ? anchorY - newHeight : lastPosition.y;
 
       makeAppearYoutubePlayerBox();
+    }
+
+    function getActualPosition(){
+      let style =  getComputedStyle(youtubePlayerBox)
+
+      return {
+        x: parseFloat(style.getPropertyValue("left")),
+        y: parseFloat(style.getPropertyValue("top")),
+        width: parseFloat(style.getPropertyValue("width")),
+        height: parseFloat(style.getPropertyValue("height")),
+      };
     }
 
     return {

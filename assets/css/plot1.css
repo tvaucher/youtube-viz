@@ -4,6 +4,7 @@
   padding: 10px 0;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: 14px;
+  user-select: none;
 }
 
 @media (min-width: 56em) {
@@ -63,13 +64,6 @@
     font-size: 18px;
     height: 40px;
   }
-}
-
-svg text {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .axisLabel {
