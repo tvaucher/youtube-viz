@@ -45,11 +45,10 @@
       data.forEach((d) => {
         d.date = dateFormatParser(d.date);
         d.upload_date = dateFormatParser(d.upload_date);
-        d.thumbnail =
-        `<div class = "showVideoOnClick" data-song_id = ${d.display_id}>
+        d.thumbnail = `<a class="showVideoOnClick" data-song-id=${d.display_id}>
         <img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video">
-        <span class = "fakeLink">${d.title}</span>
-        </div>`
+        <span class="videoTitle">${d.title}</span>
+        </a>`;
       });
 
       topVideos = crossfilter(data);
@@ -59,18 +58,9 @@
       viewCountDimension = topVideos.dimension((d) => d.view_count);
 
       initTable();
-      initEmbedVid();
+      //
       bestVideosTable.render();
-      console.log("rendered")
-      let divs = document.getElementsByClassName("showVideoOnClick")
-      Array.prototype.forEach.call(divs, function (d){
-        d.addEventListener("click",function(e){
-            let songId = d.getAttribute("data-song_id")
-            event.preventDefault()
-            e.stopPropagation()
-            App.YoutubePlayer.makeAppearYoutubePlayerBox(songId)
-        })
-      });
+      initEmbedVid();
     });
 
     function initTable() {
@@ -119,13 +109,13 @@
     }
 
     function initEmbedVid() {
-      $(document).ready(function () {
-        $(".embedVideo").magnificPopup({
-          type: "iframe",
-          mainClass: "mfp-fade",
-          removalDelay: 300,
-          preloader: false,
-          fixedContentPos: true,
+      let divs = document.getElementsByClassName("showVideoOnClick");
+      Array.prototype.forEach.call(divs, function (d) {
+        d.addEventListener("click", function (e) {
+          let songId = d.getAttribute("data-song-id");
+          event.preventDefault();
+          e.stopPropagation();
+          App.YoutubePlayer.makeAppearYoutubePlayerBox(songId);
         });
       });
     }
