@@ -63,10 +63,21 @@
       r.addEventListener("mousedown", function (e) {
         //console.log("started to resize")
         lastPosition = getActualPosition()
+
+
+        let middleWOfWindow = lastPosition.x + lastPosition.width / 2;
+        let middleHOfWindow = lastPosition.y + lastPosition.height / 2;
+        let isClickTop = e.clientY < middleHOfWindow;
+        let isClickLeft = e.clientX < middleWOfWindow;
+
+        let borderWidth = isClickLeft ? e.clientX - lastPosition.x : lastPosition.x + lastPosition.width - e.clientX
+        let borderHeight = isClickTop ? e.clientY - lastPosition.y : lastPosition.y + lastPosition.height - e.clientY
+
         insideClick = {
-          x: e.clientX - lastPosition.x,
-          y: e.clientY - lastPosition.y,
+          x: borderWidth,
+          y: borderHeight,
         };
+
         isResizing = true;
         iframe.style.pointerEvents = "none";
         e.stopPropagation();
@@ -179,8 +190,8 @@
       ? lastPosition.x + lastPosition.width
       : lastPosition.x;
 
-      let newWidth = Math.abs(e.clientX - anchorX); //+ borderX
-      let newHeight = Math.abs(e.clientY - anchorY); //+ borderY
+      let newWidth = Math.abs(e.clientX - anchorX) + insideClick.x
+      let newHeight = Math.abs(e.clientY - anchorY) + insideClick.y
 
       newWidth = Math.max(minWidth, newWidth);
       newHeight = Math.max(minHeight, newHeight);
