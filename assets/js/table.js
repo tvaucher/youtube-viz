@@ -48,7 +48,7 @@
         d.thumbnail =
         `<div class = "showVideoOnClick" data-song_id = ${d.display_id}>
         <img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video">
-        <a href="https://www.youtube.com/watch?v=${d.display_id}">${d.title}</a>
+        <span class = "fakeLink">${d.title}</span>
         </div>`
       });
 

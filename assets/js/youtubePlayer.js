@@ -121,7 +121,7 @@
       youtubePlayerBox.style.display = "block"
 
       if(videoId != undefined && videoId != null){
-        let newUrl = "https://www.youtube.com/embed/"+videoId
+        let newUrl = "https://www.youtube.com/embed/"+videoId+"?autoplay=1"
         iframe.src = newUrl
       }
 
@@ -158,7 +158,7 @@
 
       makeAppearYoutubePlayerBox()
     }
-    
+
     return {
       makeAppearYoutubePlayerBox:makeAppearYoutubePlayerBox,
     }

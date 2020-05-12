@@ -1,9 +1,10 @@
 #youtubePlayerBox{
   /*display: none;*/
   position: fixed;
-  background-color: pink;
-  padding: 10px;
+  background-color:#b1b1b1;
+  padding: 5px;
   cursor: grab;
+  border: 1px solid black;
 }
 
 #youtubePlayerBox.grabbed{
@@ -15,7 +16,6 @@
   position: absolute;
   width:20px;
   height: 20px;
-  background-color: blue;
 
 }
 
@@ -25,9 +25,8 @@
   cursor: nesw-resize;
 }
 #youtubePlayerBox .topLeft{
-  top:0px;
-  left:0px;
-  background-color: red;
+  top:-5px;
+  left:-5px;
   cursor: auto;
   z-index: 1;
 }
@@ -49,5 +48,7 @@
   position: relative;
   width:100%;
   height: 100%;
+  border: 1px solid #b1b1b1;
+  padding-bottom: 1px;
 
 }
