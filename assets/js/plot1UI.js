@@ -855,6 +855,7 @@
 
           //so the function moving outside a chart will not be called
           e.stopPropagation();
+          App.YoutubePlayer.mouseIsMoving(e)
         });
 
         chart.path.on("mouseover", function (e) {
@@ -1139,6 +1140,7 @@
 
           //wont call moving outside a chart
           e.stopPropagation();
+          App.YoutubePlayer.mouseIsMoving(e)
         });
       });
     }
@@ -1220,6 +1222,8 @@
       ];
       return colors[index % colors.length];
     }
+
+
 
     return {
       setData: setData,

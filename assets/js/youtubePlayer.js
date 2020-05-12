@@ -91,12 +91,15 @@
     });
 
     document.addEventListener("mousemove", function (e) {
+      mouseIsMoving(e)
+    });
+    function mouseIsMoving(e){
       if (isDragging) {
         move(e);
       } else if (isResizing) {
         resize(e);
       }
-    });
+    }
 
     function stopDragging() {
       //console.log("stopped to drag")
@@ -235,7 +238,9 @@
       makeAppearYoutubePlayerBox: makeAppearYoutubePlayerBox,
       isDraggingOrPadding:function(){
         return isDragging || isResizing
-      }
+      },
+      mouseIsMoving:mouseIsMoving,
+
     };
   })();
   App.YoutubePlayer = YoutubePlayer;
