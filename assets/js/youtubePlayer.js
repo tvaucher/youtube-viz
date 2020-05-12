@@ -94,28 +94,35 @@
           height: height,
         };
         iframe.style.pointerEvents = "auto";
-      } else {
-        //size correction
+      }
+
+      //size correction
+      if(lastPosition.width != null){
         lastPosition.width = Math.max(minWidth, lastPosition.width);
+      }
+      if(lastPosition.height != null){
         lastPosition.height = Math.max(minHeight, lastPosition.height);
-        //position correction
+      }
+      //position correction
+      if(lastPosition.x != null){
         if (lastPosition.x > window.innerWidth - minBorder) {
           lastPosition.x = window.innerWidth - minBorder;
         } else if (lastPosition.x + lastPosition.width < minBorder) {
           lastPosition.x = minBorder - lastPosition.width;
         }
-
+      }
+      if(lastPosition.y != null){
         if (lastPosition.y > window.innerHeight - minBorder) {
           lastPosition.y = window.innerHeight - minBorder;
         } else if (lastPosition.y + lastPosition.height < minBorder) {
           lastPosition.y = minBorder - lastPosition.height;
         }
       }
-      youtubePlayerBox.style.left = lastPosition.x + "px";
-      youtubePlayerBox.style.top = lastPosition.y + "px";
-      youtubePlayerBox.style.width = lastPosition.width + "px";
-      youtubePlayerBox.style.height = lastPosition.height + "px";
-      youtubePlayerBox.style.display = "block";
+
+      youtubePlayerBox.style.left = lastPosition.x == null ? null :lastPosition.x + "px";
+      youtubePlayerBox.style.top = lastPosition.y == null ? null :lastPosition.y + "px";
+      youtubePlayerBox.style.width = lastPosition.width == null ? null : lastPosition.width + "px";
+      youtubePlayerBox.style.height = lastPosition.height == null ? null :lastPosition.height + "px";
 
       if (videoId != undefined && videoId != null) {
         let newUrl = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&origin={{ site.url }}";
@@ -141,11 +148,11 @@
       let isClickLeft = e.clientX < middleWOfWindow;
 
       let anchorY = isClickTop
-        ? lastPosition.y + lastPosition.height
-        : lastPosition.y;
+      ? lastPosition.y + lastPosition.height
+      : lastPosition.y;
       let anchorX = isClickLeft
-        ? lastPosition.x + lastPosition.width
-        : lastPosition.x;
+      ? lastPosition.x + lastPosition.width
+      : lastPosition.x;
 
       let newWidth = Math.abs(e.clientX - anchorX); //+ borderX
       let newHeight = Math.abs(e.clientY - anchorY); //+ borderY
