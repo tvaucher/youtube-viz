@@ -35,7 +35,12 @@ has_viz: true
     </span>
   </div>
   <div id="helper_container">
-    <button type="button" class="collapsible">Show top videos table</button>
+    <button type="button" id="showTable" class="collapsible">Show top videos table</button>
+    <button type="button" id="resetInterval" class="resetbutton">Reset Time Interval</button>
+    <input id="toggle-on" class="toggle toggle-left" name="toggle" value="false" type="radio" checked>
+    <label for="toggle-on" class="btn">Time Interval</label>
+    <input id="toggle-off" class="toggle toggle-right" name="toggle" value="true" type="radio">
+    <label for="toggle-off" class="btn">Weekly</label>
     <div id="table_container" class="collapsible-content">
       <div id="tableTitle">Top 50 all categories videos for all time</div>
       <table id="dcTable"></table>
@@ -92,8 +97,8 @@ has_viz: true
 
   for (let i = 0; i < coll.length; i++) {
     coll[i].addEventListener("click", function () {
-      this.classList.toggle("active");
-      var content = this.nextElementSibling;
+      this.classList.toggle("collapsibleactive");
+      var content = document.getElementById("table_container");
       if (content.style.display === "block") {
         content.style.display = "none";
       } else {

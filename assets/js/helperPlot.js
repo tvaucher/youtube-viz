@@ -74,6 +74,8 @@
         d.date = dateFormatParser(d.date);
       });
 
+      console.log(data)
+
       const durationLength = data[0].duration.length;
 
       weeklyData = crossfilter(data);
@@ -112,6 +114,7 @@
       if (!dateDimension || !durationHist || dateRange === selectedTimeInterval)
         return;
       selectedTimeInterval = dateRange;
+      console.log(dateRange)
       dateDimension.filter(selectedTimeInterval);
       durationHist.redraw();
       updateTitle();
@@ -203,16 +206,17 @@
 
       redraw() {
         let { hist, bins } = this.group.value();
+        console.log(hist, bins)
         this.y.domain([0, d3.max(hist)]);
         this.yAxisContainer
           .transition()
-          .duration(1000)
+          .duration(600)
           .call(this.yAxis.scale(this.y));
         let rects = svg.selectAll("rect").data(hist);
         rects.exit().remove();
         rects
           .transition()
-          .duration(1000)
+          .duration(600)
           .attr("height", (d) => height - this.y(+d))
           // .attr("x", (d, i) => (width / hist.length) * i)
           .attr("y", (d) => this.y(+d));
