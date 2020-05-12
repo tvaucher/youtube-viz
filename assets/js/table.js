@@ -45,8 +45,11 @@
       data.forEach((d) => {
         d.date = dateFormatParser(d.date);
         d.upload_date = dateFormatParser(d.upload_date);
-        d.thumbnail = `<a class="embedVideo" href="https://www.youtube.com/watch?v=${d.display_id}"><img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video"><span class="videoTitle">${d.title}</span></a>`;
-
+        d.thumbnail =
+        `<div class = "showVideoOnClick" data-song_id = ${d.display_id}>
+        <img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${d.display_id}/mqdefault.jpg" alt="Video">
+        <a href="https://www.youtube.com/watch?v=${d.display_id}">${d.title}</a>
+        </div>`
       });
 
       topVideos = crossfilter(data);
@@ -58,6 +61,16 @@
       initTable();
       initEmbedVid();
       dc.renderAll();
+      console.log("rendered")
+      let divs = document.getElementsByClassName("showVideoOnClick")
+      Array.prototype.forEach.call(divs, function (d){
+        d.addEventListener("click",function(e){
+            let songId = d.getAttribute("data-song_id")
+            event.preventDefault()
+            e.stopPropagation()
+            App.YoutubePlayer.makeAppearYoutubePlayerBox(songId)
+        })
+      });
     });
 
     function initTable() {
