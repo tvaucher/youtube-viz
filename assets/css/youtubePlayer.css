@@ -12,6 +12,21 @@
   cursor: grabbing;
 }
 
+#youtubePlayerBox.minusDisplayed{
+  left:0px;
+  top:0px;
+  width: 100px;
+  height:100px;
+}
+#youtubePlayerBox.centerDisplayed{
+  x:300px;
+  y:400px;
+  width: 200px;
+  height:100px;
+
+
+}
+
 #youtubePlayerBox .corner,#youtubePlayerBox .minusButton{
   /*display: none;*/
   position: absolute;

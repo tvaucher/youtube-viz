@@ -1094,14 +1094,13 @@
     ) {
       frontChartsPaths.forEach((path, id) => {
         path.on("mousemove", function (e) {
-          if(App.YoutubePlayer.isDraggingOrPadding()){
           let coordinateX = d3.mouse(this)[0];
           let dateSelected = getXscale().invert(coordinateX);
           if (!isMouseDown) {
             App.Plot1.mouseMoveInFrontChart(indexSelected, dateSelected);
           }
           isMovingDown(dateSelected, d3.event.clientY, d3.event.clientX);
-        }
+
         });
 
         path.on("click", function () {
