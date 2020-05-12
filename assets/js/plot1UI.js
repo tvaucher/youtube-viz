@@ -3,6 +3,7 @@
   var App = window.App || {};
   let Plot1UI = (function () {
     const table = App.Table;
+    const helperPlot = App.HelperPlot;
     const containerName = "plot1_container";
     const titleContainerId = "plot1_title_container";
     let titles = null;
@@ -41,6 +42,7 @@
         set: (target, key, value) => {
           target[key] = value;
           table.filterDateRange(value);
+          helperPlot.filterDateRange(value);
           return true;
         },
       }
@@ -54,6 +56,7 @@
         set: (target, key, value) => {
           target[key] = value;
           table.filterCategory(value);
+          helperPlot.filterCategory(value);
           return true;
         },
       }
@@ -326,15 +329,15 @@
         .attr("x2", stackedAreaMarginWidth)
         .attr("y2", stackedAreaMargin.height)
         .attr("class", "stackedAreaBorder");
-      //xAxixLabel
+      //yAxisLabel
       svg
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", stackedAreaMargin.left / 4)
+        .attr("y", 12)
         .attr("x", 0 - stackedAreaMargin.height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .attr("id", "axisLabel")
+        .attr("class", "axisLabel")
         .text("Weekly Score per Category");
 
       svg.on("mousemove", function () {

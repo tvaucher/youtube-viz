@@ -72,7 +72,7 @@ svg text {
   user-select: none;
 }
 
-#axisLabel {
+.axisLabel {
   fill: #b1b1b1;
 }
 
@@ -138,6 +138,28 @@ svg text::selection {
   stroke: #b1b1b1;
 }
 
+.rect {
+  fill: steelblue;
+  stroke: #b1b1b1;
+}
+
+.rect:hover {
+  fill: lightsteelblue;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  min-width: 40px;
+  height: auto;
+  text-align: center;
+  background-color: #b1b1b1;
+  border: 1px solid #262a2c;
+  font-size: 12px;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  padding: 0.25rem 0.25rem;
+}
+
 #aboveRectContainer rect {
   fill: rgba(255, 255, 255, 0.2);
 }
@@ -171,17 +193,51 @@ svg text::selection {
   display: block;
 }
 
+.collapsible {
+  background-color: #b1b1b1;
+  padding: 0.5rem;
+  margin-top: 1em;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+
+.collapsible:after {
+  content: "\02795"; /* Unicode character for "plus" sign (+) */
+  font-size: 12px;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+.active,
+.collapsible:hover {
+  background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.collapsible-content {
+  display: none;
+  transition: max-height 0.2s ease-out;
+}
+
 #table_container {
   width: 100%;
   padding: 0 1em 0 1em;
 }
 
 #plot2_container {
-  height: 300px;
-  display: none;
+  height: 450px;
+  display: flex;
 }
 
-#tableTitle {
+#tableTitle, #durationTitle {
   font-size: 16px;
   padding: 5px 0 10px;
   font-weight: bold;
@@ -243,8 +299,8 @@ thead {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, .5);
-  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 tbody {
@@ -359,4 +415,10 @@ thead th:last-child {
 /* content animate out */
 .mfp-fade.mfp-wrap.mfp-removing .mfp-content {
   opacity: 0;
+}
+
+/* HELPER PLOT */
+#duration_plot {
+  height: 90%;
+  width: 50%;
 }
