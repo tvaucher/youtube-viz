@@ -24,6 +24,28 @@
       });
     });
 
+    let minusButton = youtubePlayerBox.getElementsByClassName("minusButton");
+    Array.prototype.forEach.call(minusButton, function (b) {
+      b.addEventListener("click", function (e) {
+        lastPosition.x = null
+        lastPosition.y = null
+        lastPosition.width = null
+        lastPosition.height = null
+        makeAppearYoutubePlayerBox()
+        if(youtubePlayerBox.classList.contains("minusDisplayed")){
+          youtubePlayerBox.classList.remove("minusDisplayed")
+          youtubePlayerBox.classList.add("centerDisplayed")
+        }else{
+          youtubePlayerBox.classList.add("minusDisplayed")
+          youtubePlayerBox.classList.remove("centerDisplayed")
+        }
+      });
+
+      b.addEventListener("mousedown", function (e) {
+        e.stopPropagation();
+      });
+    });
+
     youtubePlayerBox.addEventListener("mousedown", function (e) {
       //console.log("started to drag")
       lastPosition = getActualPosition()
@@ -34,6 +56,8 @@
       isDragging = true;
       youtubePlayerBox.classList.add("grabbed");
       iframe.style.pointerEvents = "none";
+      youtubePlayerBox.classList.remove("minusDisplayed")
+      youtubePlayerBox.classList.remove("centerDisplayed")
     });
 
     Array.prototype.forEach.call(resizers, function (r) {
@@ -47,6 +71,7 @@
         isResizing = true;
         iframe.style.pointerEvents = "none";
         e.stopPropagation();
+
       });
     });
 
@@ -181,6 +206,9 @@
 
     return {
       makeAppearYoutubePlayerBox: makeAppearYoutubePlayerBox,
+      isDraggingOrPadding:function(){
+        return isDragging || isResizing
+      }
     };
   })();
   App.YoutubePlayer = YoutubePlayer;
