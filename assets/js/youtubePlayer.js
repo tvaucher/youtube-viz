@@ -194,20 +194,29 @@
 
     function getActualPosition(){
       let style =  getComputedStyle(youtubePlayerBox)
-        console.log(parseFloat(style.getPropertyValue("left")))
+      let rect = youtubePlayerBox.getBoundingClientRect()
+
+      return{
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+      }
+
       return {
-        x: parseFloat(style.getPropertyValue("left")),
-        y: parseFloat(style.getPropertyValue("top")),
+        x: youtubePlayerBox.offsetLeft,//parseFloat(style.getPropertyValue("left")),
+        y: youtubePlayerBox.offsetTop,//parseFloat(style.getPropertyValue("top")),
         width: parseFloat(style.getPropertyValue("width")),
         height: parseFloat(style.getPropertyValue("height")),
       };
     }
 
     function resetPosition(){
+      //youtubePlayerBox.style.transform = 'none';
       lastPosition = getActualPosition()
       youtubePlayerBox.classList.remove("minusDisplayed")
       youtubePlayerBox.classList.remove("centerDisplayed")
-      console.log(lastPosition)
+
       makeAppearYoutubePlayerBox()
     }
 
