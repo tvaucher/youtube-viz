@@ -56,8 +56,7 @@
       isDragging = true;
       youtubePlayerBox.classList.add("grabbed");
       iframe.style.pointerEvents = "none";
-      youtubePlayerBox.classList.remove("minusDisplayed")
-      youtubePlayerBox.classList.remove("centerDisplayed")
+      resetPosition()
     });
 
     Array.prototype.forEach.call(resizers, function (r) {
@@ -71,7 +70,7 @@
         isResizing = true;
         iframe.style.pointerEvents = "none";
         e.stopPropagation();
-
+        resetPosition()
       });
     });
 
@@ -195,13 +194,21 @@
 
     function getActualPosition(){
       let style =  getComputedStyle(youtubePlayerBox)
-
+        console.log(parseFloat(style.getPropertyValue("left")))
       return {
         x: parseFloat(style.getPropertyValue("left")),
         y: parseFloat(style.getPropertyValue("top")),
         width: parseFloat(style.getPropertyValue("width")),
         height: parseFloat(style.getPropertyValue("height")),
       };
+    }
+
+    function resetPosition(){
+      lastPosition = getActualPosition()
+      youtubePlayerBox.classList.remove("minusDisplayed")
+      youtubePlayerBox.classList.remove("centerDisplayed")
+      console.log(lastPosition)
+      makeAppearYoutubePlayerBox()
     }
 
     return {

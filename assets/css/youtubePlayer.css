@@ -13,18 +13,23 @@
 }
 
 #youtubePlayerBox.minusDisplayed{
-  left:0px;
-  top:0px;
-  width: 100px;
-  height:100px;
+  left:10px;
+  top:10px;
+  width: 20%;
+  height:20%;
+  transition-property: left top;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier();
 }
 #youtubePlayerBox.centerDisplayed{
-  x:300px;
-  y:400px;
-  width: 200px;
-  height:100px;
-
-
+  left:50%;
+  top:50%;
+  width: 50%;
+  height:50%;
+  transform: translate(-50%, -50%);
+  transition-property: left top;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier();
 }
 
 #youtubePlayerBox .corner,#youtubePlayerBox .minusButton{
