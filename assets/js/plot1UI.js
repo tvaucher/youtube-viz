@@ -12,7 +12,7 @@
 
     //-------------SOME UI PARAMTER TO TUNE-------------
 
-    let minNumberOfPointInScreen = 20;
+    let minNumberOfPointInScreen = 4;
     let curveType = d3.curveLinear;
 
     //'curveMonotoneX','curveLinear','curveBasis', 'curveCardinal', 'curveStepBefore',...
