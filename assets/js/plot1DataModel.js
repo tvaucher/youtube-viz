@@ -3,6 +3,8 @@
   var App = window.App || {};
   let Plot1DataModel = (function () {
     /**From the csv file, task is to return the data object*/
+    const dateFormatParser = d3.timeParse("%Y-%m-%d");
+
     function prepareData(csvData) {
       //getting all the categories
       let categories = [];
@@ -27,7 +29,7 @@
           }
         }
 
-        let date = new Date(Date.parse(d.date));
+        let date = dateFormatParser(d.date);
         let localSingleMax = values.reduce((a, b) => (a > b ? a : b), 0);
         let localTemporalMax = values.reduce((a, b) => a + b, 0);
 

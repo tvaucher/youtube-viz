@@ -41,8 +41,10 @@
       {
         set: (target, key, value) => {
           target[key] = value;
-          table.filterDateRange(value);
-          helperPlot.filterDateRange(value);
+          if (isInterval) {
+            table.filterDateRange(value);
+            helperPlot.filterDateRange(value);
+          }
           return true;
         },
       }
@@ -68,8 +70,21 @@
     let toCallForBrush = null;
 
     // For the other plots
-    let isClicked = false;
     let isTimeFrozen = false;
+    let isInterval = true;
+
+    document.getElementById("resetInterval").addEventListener("click", () => {
+      timeIntervalSelected.value = null;
+      positionBrush(null, null);
+    });
+    document.getElementById("toggle-on").addEventListener("change", () => {
+      isInterval = true;
+      table.filterDateRange(timeIntervalSelected.value);
+      helperPlot.filterDateRange(timeIntervalSelected.value);
+    });
+    document
+      .getElementById("toggle-off")
+      .addEventListener("change", () => (isInterval = false));
 
     document.addEventListener("keypress", function (e) {
       const char = String.fromCharCode(e.charCode);
@@ -367,7 +382,6 @@
           if (!isMouseDown) {
             App.Plot1.mouseMoveOutOfCharts(dateSelected);
           }
-          // HERE ADD UPDATE OF PLOTS
         } else {
           removeVerticalLines();
           removeSelectionRect(null);
@@ -855,7 +869,7 @@
 
           //so the function moving outside a chart will not be called
           e.stopPropagation();
-          App.YoutubePlayer.mouseIsMoving(e)
+          App.YoutubePlayer.mouseIsMoving(e);
         });
 
         chart.path.on("mouseover", function (e) {
@@ -1101,7 +1115,6 @@
             App.Plot1.mouseMoveInFrontChart(indexSelected, dateSelected);
           }
           isMovingDown(dateSelected, d3.event.clientY, d3.event.clientX);
-
         });
 
         path.on("click", function () {
@@ -1140,7 +1153,7 @@
 
           //wont call moving outside a chart
           e.stopPropagation();
-          App.YoutubePlayer.mouseIsMoving(e)
+          App.YoutubePlayer.mouseIsMoving(e);
         });
       });
     }
@@ -1192,6 +1205,12 @@
         .attr("y2", Y)
         .attr("class", "verticalLines")
         .attr("stroke", color);
+
+      // HERE ADD UPDATE OF PLOTS
+      if (!isInterval) {
+        table.filterDateRange(dateToDisplay);
+        helperPlot.filterDateRange(dateToDisplay);
+      }
     }
 
     function setCategorySelectedToNull() {
@@ -1222,8 +1241,6 @@
       ];
       return colors[index % colors.length];
     }
-
-
 
     return {
       setData: setData,
