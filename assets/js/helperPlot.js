@@ -74,7 +74,7 @@
         d.date = dateFormatParser(d.date);
       });
 
-      console.log(data)
+      //console.log(data)
 
       const durationLength = data[0].duration.length;
 
@@ -114,7 +114,7 @@
       if (!dateDimension || !durationHist || dateRange === selectedTimeInterval)
         return;
       selectedTimeInterval = dateRange;
-      console.log(dateRange)
+      //console.log(dateRange)
       dateDimension.filter(selectedTimeInterval);
       durationHist.redraw();
       updateTitle();
@@ -206,7 +206,7 @@
 
       redraw() {
         let { hist, bins } = this.group.value();
-        console.log(hist, bins)
+        //console.log(hist, bins)
         this.y.domain([0, d3.max(hist)]);
         this.yAxisContainer
           .transition()

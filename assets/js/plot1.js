@@ -19,11 +19,11 @@
     /*Some actual states about the graph*/
     //so we can ask the model for the maxY to display in the UI
     let displayedXInterval = null;
-    let categorySelected = null;
+    let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = false;
-    let isStreamChart = true;
+    let isStreamChart = false;
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
@@ -76,6 +76,95 @@
       addElementsToStackedArea(data);
     });
 
+    function addElementsToStackedArea(data) {
+      //initiate the charts
+      charts = [];
+      for (let i = 0; i < data.categories.length; i++) {
+        charts.push(
+          UI.createChart({
+            data: data,
+            id: i,
+            stacksSupperpose: !seeChartInterleaving,
+            streamChartWhenSupperPosed: isStreamChart,
+            scaleSelected:categorySelected == 0 ? null : categorySelected-1,
+          })
+        )
+      }
+//--
+      let charts2 = [];
+      for (let i = 0; i < data.categories.length; i++) {
+        charts2.push(
+          UI.createChart({
+            data: data,
+            id: i,
+            stacksSupperpose: !seeChartInterleaving,
+            streamChartWhenSupperPosed: false,
+            scaleSelected:categorySelected == 0 ? null : categorySelected-1,
+          })
+        )
+      }
+
+      console.log(charts)
+      console.log(charts2)
+      console.log("-")
+      //initiate the lines
+      upperLines = [];
+      if (seeChartInterleaving) {
+        for (let i = 0; i < data.categories.length; i++) {
+          upperLines.push(
+            UI.createUpperLine({
+              data: data,
+              id: i,
+              stacksSupperpose: !seeChartInterleaving,
+              scaleSelected: categorySelected == 0 ? null : categorySelected-1,
+            })
+          );
+        }
+      }
+
+      //clean the previous charts and lines
+      UI.removeCharts();
+      UI.removeLines();
+      UI.removePartsOfChart();
+      UI.removeFrontCharts();
+      UI.makeTitlesLookNormal();
+
+      let chartInOrder = getChartInOrder(charts);
+      console.log(chartInOrder)
+
+      if(seeChartInterleaving) {
+        UI.renderCharts(chartInOrder, false);
+        UI.renderUpperLines(upperLines);
+        heavyCompute();
+        UI.renderUpperLines(upperLines);
+      } else {
+        UI.renderCharts(chartInOrder, true);
+      }
+    } //end of create plot function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function setChartInterleavingValue(value){
       seeChartInterleaving = value
       interLeavingCheckBox.checked = seeChartInterleaving
@@ -117,7 +206,7 @@
 
 
     function setStackSupperposed(newValue) {
-      stacksSupperpose = newValue;
+      /*stacksSupperpose = newValue;
 
       interLeavingCheckBox.checked = !newValue;
 
@@ -133,7 +222,7 @@
 
         adaptYScale(displayedXInterval);
 
-      addElementsToStackedArea(data);
+      addElementsToStackedArea(data);*/
     }
 
     function shouldAdaptYScale(shouldAdapt) {
@@ -172,63 +261,17 @@
 
 
 
-    function addElementsToStackedArea(data) {
-      //draw the complete charts
-      charts = [];
-      for (let i = 0; i < data.categories.length; i++) {
-        charts.push(
-          UI.createChart({
-            data: data,
-            id: i,
-            stacksSupperpose: !seeChartInterleaving,
-            streamChartWhenSupperPosed: isStreamChart,
-            scaleSelected: 0,
-          })
-        );
-      }
 
-      upperLines = [];
-      if (seeChartInterleaving) {
-        for (let i = 0; i < data.categories.length; i++) {
-          upperLines.push(
-            UI.createUpperLine({
-              data: data,
-              id: i,
-              stacksSupperpose: !seeChartInterleaving,
-              scaleSelected: scaleSelected,
-            })
-          );
-        }
-      }
-
-      UI.removeCharts();
-      UI.removeLines();
-      UI.removePartsOfChart();
-      UI.removeFrontCharts();
-      UI.setCategorySelectedToNull();
-      categorySelected = null;
-      UI.makeTitlesLookNormal();
-
-      let chartInOrder = getChartInOrder(charts);
-
-      if (!seeChartInterleaving) {
-        UI.renderCharts(chartInOrder, true);
-      } else {
-        UI.renderCharts(chartInOrder, false);
-        UI.renderUpperLines(upperLines);
-        heavyCompute();
-        UI.renderUpperLines(upperLines);
-      }
-    } //end of create plot function
 
     function getChartInOrder(charts) {
-      if (0 == 0) {
+      if (categorySelected == 0) {
+        //normal order
         return charts;
       }
       let ordered = [];
-      ordered.push(charts[scaleSelected - 1]);
+      ordered.push(charts[categorySelected - 1]);
       charts.forEach((c) => {
-        if (c.id != scaleSelected - 1) {
+        if (c.id != categorySelected - 1) {
           ordered.push(c);
         }
       });
@@ -313,25 +356,30 @@
     }
 
     function mouseOverTitle(id) {
-      if (categorySelected == null) {
+      /*if (categorySelected == null) {
         //console.log("Mouse over title " + data.categories[id])
         UI.addFrontCharts(id, charts);
         UI.hideFrameContainer();
         UI.removeLines();
-      }
+      }*/
     }
 
     function mouseLeftTitle(id) {
-      if (categorySelected == null) {
+      /*if (categorySelected == null) {
         //console.log("Mouse left title " + data.categories[id])
         UI.removeFrontCharts();
         UI.showFrameContainer();
         UI.renderUpperLines(upperLines);
-      }
+      }*/
     }
 
     function userSelectedCategory(catId) {
-      categorySelected = catId;
+      /*if(catId == null){
+          categorySelected = 0
+      }else{
+        categorySelected = catId + 1
+      }
+
       let value = 0
       if (catId != null){
         value = catId + 1
@@ -350,39 +398,34 @@
         UI.addFrontCharts(catId, charts);
         UI.updateTitles(catId, catId);
       }
-      //console.log("User just selected the category" + catId)
+      //console.log("User just selected the category" + catId)*/
     }
 
     function mouseInChart(chartId) {
-      if (isTimeFrozen) return;
+    /*  if (isTimeFrozen) return;
       if (categorySelected == null && stacksSupperpose) {
         //console.log("Mouse went inside chart "+ chartId)
         UI.addFrontCharts(chartId, charts);
-      }
+      }*/
     }
     function mouseMoveOutOfCharts(atDate) {
-      if (isTimeFrozen) return;
+      /*if (isTimeFrozen) return;
       //console.log("Mouse move out of the charts at Date"+atDate)
       if (categorySelected == null) {
         UI.removeFrontCharts();
         UI.makeTitlesLookNormal();
       }
       updateVerticalLineInUI(atDate.getTime())
-      /*console.log(
-        "Should display info for date " +
-          atDate +
-          " and category " +
-          categorySelected
-      );*/
+      */
     }
 
     function mouseMoveInFrontChart(chartId, atDate) {
-      if (isTimeFrozen) return;
-      updateVerticalLineInUI(atDate.getTime())
+      /*if (isTimeFrozen) return;
+      updateVerticalLineInUI(atDate.getTime())*/
     }
 
     function updateVerticalLineInUI(timestamp){
-      let color =
+      /*let color =
         categorySelected == null
           ? "#B1B1B1"
           : UI.colorForIndex(categorySelected);
@@ -392,13 +435,13 @@
         color,
         data.values[closestIndex].date
       );
-
+*/
     }
 
     function mouseClickedInPartOfChart(chartId) {
-      userSelectedCategory(chartId);
+      /*userSelectedCategory(chartId);
       UI.hideFrameContainer();
-      UI.removeLines();
+      UI.removeLines();*/
     }
 
     return {
