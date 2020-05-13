@@ -17,61 +17,98 @@
     let upperLines = [];
 
     /*Some actual states about the graph*/
-    let maxYScore = null;
+    //so we can ask the model for the maxY to display in the UI
     let displayedXInterval = null;
     let categorySelected = null;
-    let scaleSelected = 0;
 
-    //-------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH --------------------------------------------
-    let stacksSupperpose = true;
-    let streamChartWhenSupperPosed = true;
-    let adapativeYScale = true;
+    //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
+    let seeChartInterleaving = false;
+    let isStreamChart = true;
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
-    let freezeYCheckBox = document.getElementById("freezeYAxis");
     let streamGraphXbSpan = document.getElementById("streamGraphXbSpan");
     let streamGraphCheckBox = document.getElementById("streamGraphXb");
 
-    let yAxisSelector = document.getElementById("yAxisSelector");
-    let yAxisBox = document.getElementById("yAxisSelectorWrapper");
-
     //the related event listeners
     interLeavingCheckBox.addEventListener("change", function (e) {
-      setStackSupperposed(!e.target.checked);
-    });
-
-    freezeYCheckBox.addEventListener("change", function (e) {
-      shouldAdaptYScale(!e.target.checked);
+      setChartInterleavingValue(e.target.checked);
     });
 
     streamGraphCheckBox.addEventListener("change", function (e) {
-      setSteamGraph(e.target.checked);
-    });
-
-    yAxisSelector.addEventListener("change", function (e) {
-      yAxisSelectorChanged(e.target.value);
+      setStreamGraphValue(e.target.checked);
     });
 
     //the keyboard shortcuts for theses functions
     document.addEventListener("keypress", function (e) {
       const char = String.fromCharCode(e.charCode);
       if (char == "s") {
-        setStackSupperposed(!stacksSupperpose);
-      }
-
-      if (char == "y") {
-        shouldAdaptYScale(!adapativeYScale);
+        setChartInterleavingValue(!seeChartInterleaving)
       }
 
       if (char == "t") {
-        setSteamGraph(!streamChartWhenSupperPosed);
+        setStreamGraphValue(!isStreamChart)
       }
 
       if (char == "f") {
         isTimeFrozen = !isTimeFrozen;
       }
+      if (Number(char) && data != null && Number(char)<=data.categories.length){
+        selectACategory(Number(char))
+      }
     });
+
+    //-------------------------------------------------INITIAL FLOW --------------------------------------------
+
+    //load the csv file and call addElementsToStackedArea(),createSlider() when done
+    d3.csv("assets/data/weekly_score.csv", function (d) {
+      data = model.prepareData(d);
+      displayedXInterval = [data.smallestDate, data.biggestDate]
+      setChartInterleavingValue(seeChartInterleaving)
+      setStreamGraphValue(isStreamChart)
+
+
+      UI.setData({
+        data: data,
+        maxYscore:stacksSupperpose ? data.maxScoreAtTimeStamp: data.maxSingleScore,
+        onBrush: userBrushed,
+      });
+      UI.prepareElements();
+      addElementsToStackedArea(data);
+    });
+
+    function setChartInterleavingValue(value){
+
+    }
+
+    function setStreamGraphValue(value){
+
+    }
+
+    function selectACategory(nb){
+      console.log(nb)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function setStackSupperposed(newValue) {
       stacksSupperpose = newValue;
@@ -81,7 +118,8 @@
         streamGraphXbSpan.style.display = "inline";
       }
       interLeavingCheckBox.checked = !newValue;
-      maxYScore = stacksSupperpose
+
+      let maxYScore = stacksSupperpose
         ? data.maxScoreAtTimeStamp
         : data.maxSingleScore;
       UI.setData({
@@ -91,24 +129,19 @@
       });
       UI.drawYAxis();
 
-      if (adapativeYScale) {
         adaptYScale(displayedXInterval);
-      }
+
       addElementsToStackedArea(data);
-      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
     }
 
     function shouldAdaptYScale(shouldAdapt) {
-      adapativeYScale = shouldAdapt;
       freezeYCheckBox.checked = !shouldAdapt;
-      if (adapativeYScale) {
         adaptYScale(displayedXInterval);
         if (!stacksSupperpose) {
           heavyCompute();
           UI.renderUpperLines(upperLines);
         }
-      }
-      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
+
     }
 
     function setSteamGraph(futureValue) {
@@ -120,64 +153,22 @@
           yAxisSelectorChanged(scaleSelected);
         }
       }
-      isSelectBoxHidden(stacksSupperpose && streamChartWhenSupperPosed);
     }
 
     function yAxisSelectorChanged(newValue) {
       scaleSelected = newValue;
-      shouldAdaptYScale(adapativeYScale);
+      shouldAdaptYScale(true);
       addElementsToStackedArea(data);
       //console.log(newValue)
       //yAxisSelector.style.backgroundColor = newValue == 0 ? "#B1B1B1" : UI.colorForFadingIndex(newValue-1)
       //yAxisSelector.style.color = newValue == 0 ? "black" : "#B1B1B1"
     }
 
-    function isSelectBoxHidden(bool) {
-      yAxisBox.style.visibility = bool ? "hidden" : "visible";
-    }
 
-    //load the csv file and call addElementsToStackedArea(),createSlider() when done
-    d3.csv("assets/data/weekly_score.csv", function (d) {
-      data = model.prepareData(d);
-      prepareYAxisSelector(data);
-      maxYScore = stacksSupperpose
-        ? data.maxScoreAtTimeStamp
-        : data.maxSingleScore;
-      displayedXInterval = [data.smallestDate, data.biggestDate];
 
-      let selectBoxHidden = false;
-      if (stacksSupperpose && streamChartWhenSupperPosed) {
-        selectBoxHidden = true;
-      }
-      isSelectBoxHidden(selectBoxHidden);
 
-      UI.setData({
-        data: data,
-        maxYscore: maxYScore,
-        onBrush: userBrushed,
-      });
-      UI.prepareElements();
-      addElementsToStackedArea(data);
-    });
 
-    function prepareYAxisSelector(data) {
-      yAxisSelector.innerHTML = "";
-      let defautOption = document.createElement("option");
-      defautOption.value = "0";
-      defautOption.textContent = "All";
-      defautOption.style.backgroundColor = "#B1B1B1";
-      yAxisSelector.appendChild(defautOption);
-      data.categories.forEach((c, i) => {
-        let newOption = document.createElement("option");
-        newOption.value = i + 1;
-        newOption.textContent = c;
-        let backGroundColor = UI.colorForFadingIndex(i + 1);
-        let color = UI.colorForIndex(i + 1);
-        //newOption.style.backgroundColor = backGroundColor
-        //newOption.style.color = color
-        yAxisSelector.appendChild(newOption);
-      });
-    }
+
 
     function addElementsToStackedArea(data) {
       //draw the complete charts
@@ -243,7 +234,6 @@
     }
 
     function adaptYScale(forInterval) {
-      if (adapativeYScale) {
         let scaleToUse = scaleSelected;
         if (stacksSupperpose && streamChartWhenSupperPosed) {
           scaleToUse = 0;
@@ -270,7 +260,7 @@
         for (var i = 0; i < upperLines.length; i++) {
           upperLines[i].rescaleY(maxBound);
         }
-      }
+
     }
 
     function userBrushed(b) {
@@ -358,8 +348,6 @@
         UI.addFrontCharts(catId, charts);
         UI.updateTitles(catId, catId);
       }
-
-
       //console.log("User just selected the category" + catId)
     }
 
@@ -377,16 +365,7 @@
         UI.removeFrontCharts();
         UI.makeTitlesLookNormal();
       }
-      let color =
-        categorySelected == null
-          ? "#B1B1B1"
-          : UI.colorForIndex(categorySelected);
-      let closestIndex = model.getClosestIndex(atDate, data);
-      UI.addVerticalLines(
-        [atDate.getTime()],
-        color,
-        data.values[closestIndex].date
-      );
+      updateVerticalLineInUI(atDate.getTime())
       /*console.log(
         "Should display info for date " +
           atDate +
@@ -396,10 +375,8 @@
     }
 
     function mouseMoveInFrontChart(chartId, atDate) {
-      //  UI.colorForIndex(chartId)
       if (isTimeFrozen) return;
       updateVerticalLineInUI(atDate.getTime())
-
     }
 
     function updateVerticalLineInUI(timestamp){
@@ -420,7 +397,6 @@
       userSelectedCategory(chartId);
       UI.hideFrameContainer();
       UI.removeLines();
-      //console.log("Mouse move in Part Of chart "+ chartId + " for the date " + atDate)
     }
 
     return {
