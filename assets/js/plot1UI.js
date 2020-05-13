@@ -256,8 +256,6 @@
         removeSelectionRect(dateSelected, d3.event.clientX);
       });
 
-      //document.getElementById("plot1_container").addEventListener("mousedown",function(e){
-
       svg.on("mousedown", function (e) {
         //console.log("mouse down")
         let coordinateX = d3.mouse(this)[0];

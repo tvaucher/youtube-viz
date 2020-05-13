@@ -60,17 +60,16 @@
 
     //-------------------------------------------------INITIAL FLOW --------------------------------------------
 
-    //load the csv file and call addElementsToStackedArea(),createSlider() when done
+    //load the csv file init the graph
     d3.csv("assets/data/weekly_score.csv", function (d) {
       data = model.prepareData(d);
       displayedXInterval = [data.smallestDate, data.biggestDate]
       setChartInterleavingValue(seeChartInterleaving)
       setStreamGraphValue(isStreamChart)
 
-
       UI.setData({
         data: data,
-        maxYscore:stacksSupperpose ? data.maxScoreAtTimeStamp: data.maxSingleScore,
+        maxYscore: seeChartInterleaving ?  data.maxSingleScore : data.maxScoreAtTimeStamp,
         onBrush: userBrushed,
       });
       UI.prepareElements();
@@ -78,11 +77,18 @@
     });
 
     function setChartInterleavingValue(value){
-
+      seeChartInterleaving = value
+      interLeavingCheckBox.checked = seeChartInterleaving
+      if (seeChartInterleaving) {
+        streamGraphXbSpan.style.display = "none"
+      } else {
+        streamGraphXbSpan.style.display = "inline"
+      }
     }
 
     function setStreamGraphValue(value){
-
+      isStreamChart = value
+      streamGraphCheckBox.checked = isStreamChart
     }
 
     function selectACategory(nb){
@@ -112,11 +118,7 @@
 
     function setStackSupperposed(newValue) {
       stacksSupperpose = newValue;
-      if (!stacksSupperpose) {
-        streamGraphXbSpan.style.display = "none";
-      } else {
-        streamGraphXbSpan.style.display = "inline";
-      }
+
       interLeavingCheckBox.checked = !newValue;
 
       let maxYScore = stacksSupperpose
@@ -178,21 +180,21 @@
           UI.createChart({
             data: data,
             id: i,
-            stacksSupperpose: stacksSupperpose,
-            streamChartWhenSupperPosed: streamChartWhenSupperPosed,
-            scaleSelected: scaleSelected,
+            stacksSupperpose: !seeChartInterleaving,
+            streamChartWhenSupperPosed: isStreamChart,
+            scaleSelected: 0,
           })
         );
       }
 
       upperLines = [];
-      if (!stacksSupperpose) {
+      if (seeChartInterleaving) {
         for (let i = 0; i < data.categories.length; i++) {
           upperLines.push(
             UI.createUpperLine({
               data: data,
               id: i,
-              stacksSupperpose: stacksSupperpose,
+              stacksSupperpose: !seeChartInterleaving,
               scaleSelected: scaleSelected,
             })
           );
@@ -209,7 +211,7 @@
 
       let chartInOrder = getChartInOrder(charts);
 
-      if (stacksSupperpose) {
+      if (!seeChartInterleaving) {
         UI.renderCharts(chartInOrder, true);
       } else {
         UI.renderCharts(chartInOrder, false);
@@ -220,7 +222,7 @@
     } //end of create plot function
 
     function getChartInOrder(charts) {
-      if (scaleSelected == 0) {
+      if (0 == 0) {
         return charts;
       }
       let ordered = [];
@@ -234,7 +236,7 @@
     }
 
     function adaptYScale(forInterval) {
-        let scaleToUse = scaleSelected;
+        /*let scaleToUse = scaleSelected;
         if (stacksSupperpose && streamChartWhenSupperPosed) {
           scaleToUse = 0;
         }
@@ -259,7 +261,7 @@
         }
         for (var i = 0; i < upperLines.length; i++) {
           upperLines[i].rescaleY(maxBound);
-        }
+        }*/
 
     }
 
@@ -277,7 +279,7 @@
 
       window.clearInterval(heavyComputationTimer);
       UI.removePartsOfChart();
-      if (!stacksSupperpose) {
+      if (seeChartInterleaving) {
         UI.removePartsOfChart();
         //UI.removeLines()
         for (var i = 0; i < upperLines.length; i++) {
