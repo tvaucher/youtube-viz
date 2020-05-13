@@ -148,9 +148,9 @@
       if(!seeChartInterleaving){
         //visible changes
         addElementsToStackedArea(data);
-        selectACategory(categorySelected)
-        console.log("öLJ")
         if(categorySelected != 0){
+          UI.addFrontCharts(categorySelected-1, charts);
+          UI.updateTitles(-1,categorySelected-1)
           //yAxisSelectorChanged(scaleSelected);
         }
       }
@@ -163,7 +163,6 @@
         categorySelected = id
       }
       UI.removeVerticalLines()
-      console.log(categorySelected)
 
       if(categorySelected==0){
         //no category
@@ -172,6 +171,7 @@
         UI.addFrontCharts(id-1, charts);
         UI.updateTitles(-1,id-1)
       }
+      console.log("cat "+ categorySelected)
 
       /*if(catId == null){
       categorySelected = 0
