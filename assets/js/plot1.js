@@ -22,7 +22,7 @@
     let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = false;
+    let seeChartInterleaving = true;
     let isStreamChart = false;
 
     //the user controls
@@ -154,6 +154,8 @@
     }
 
     function selectACategory(id){
+      UI.addFrontCharts(id, charts);
+      UI.removeVerticalLines()
       categorySelected = categorySelected == id+1 ? 0 : id+1
       if(categorySelected==0){
         UI.updateTitles(id,-1)
@@ -315,48 +317,13 @@ function heavyCompute() {
   UI.addPartsOfChart(
     data.smallestDate.getTime(),
     chartInterLeaving,
-    stacksSupperpose,
+    !seeChartInterleaving,
     data
   );
 }
 
 
 
-
-
-
-
-//-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
-
-function mouseClickedInTitle(id){
-  UI.addFrontCharts(id, charts);
-  selectACategory(id)
-}
-
-function clickInFrontChart(id){
-  UI.addFrontCharts(id, charts);
-  selectACategory(id)
-}
-
-function mouseOverTitle(id) {
-  //console.log("Mouse over title " + data.categories[id])
-  if (categorySelected == 0) {
-    UI.addFrontCharts(id, charts);
-    UI.hideFrameContainer();
-    UI.removeLines();
-    UI.updateTitles(id,-1)
-  }
-}
-
-function mouseLeftTitle(id) {
-  //console.log("Mouse left title " + data.categories[id])
-  if (categorySelected == 0) {
-    UI.removeFrontCharts();
-    UI.showFrameContainer();
-    UI.renderUpperLines(upperLines);
-    UI.updateTitles(-1,-1)
-  }
-}
 
 
 
@@ -383,12 +350,41 @@ function userBrushed(b) {
     timerBeforeComputingChartInterleaving = window.setTimeout(function () {
       heavyCompute();
       UI.renderUpperLines(upperLines);
-      if (categorySelected != null) {
+      if (categorySelected != 0) {
         UI.addFrontCharts(categorySelected, charts);
       }
     }, 250);
   }
   //addPartsOfChart()
+}
+//-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
+
+function mouseClickedInTitle(id){
+  selectACategory(id)
+}
+
+function clickInFrontChart(id){
+  selectACategory(id)
+}
+
+function mouseOverTitle(id) {
+  //console.log("Mouse over title " + data.categories[id])
+  if (categorySelected == 0) {
+    UI.addFrontCharts(id, charts);
+    UI.hideFrameContainer();
+    UI.removeLines();
+    UI.updateTitles(id,-1)
+  }
+}
+
+function mouseLeftTitle(id) {
+  //console.log("Mouse left title " + data.categories[id])
+  if (categorySelected == 0) {
+    UI.removeFrontCharts();
+    UI.showFrameContainer();
+    UI.renderUpperLines(upperLines);
+    UI.updateTitles(-1,-1)
+  }
 }
 
 function mouseInChart(chartId) {
@@ -415,23 +411,23 @@ function mouseMoveInFrontChart(chartId, atDate) {
 }
 
 function updateVerticalLineInUI(timestamp){
-  /*let color =
-  categorySelected == null
+  let color =
+  categorySelected == 0
   ? "#B1B1B1"
-  : UI.colorForIndex(categorySelected);
+  : UI.colorForIndex(categorySelected-1);
   let closestIndex = model.getClosestIndex(new Date(timestamp), data);
   UI.addVerticalLines(
-  [timestamp],
-  color,
-  data.values[closestIndex].date
-);
-*/
+    [timestamp],
+    color,
+    data.values[closestIndex].date
+  );
+
 }
 
 function mouseClickedInPartOfChart(chartId) {
-  /*userSelectedCategory(chartId);
+  userSelectedCategory(chartId);
   UI.hideFrameContainer();
-  UI.removeLines();*/
+  UI.removeLines();
 }
 
 

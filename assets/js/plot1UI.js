@@ -1258,6 +1258,7 @@ return {
   removeFrontCharts: removeFrontCharts,
   updateTitles: updateTitles,
   addVerticalLines: addVerticalLines,
+  removeVerticalLines:removeVerticalLines,
   colorForIndex: colorForIndex,
   colorForFadingIndex: colorForFadingIndex,
   setCategorySelectedToNull: setCategorySelectedToNull,
