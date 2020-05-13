@@ -637,8 +637,6 @@ class Chart {
           if (streamChartWhenSupperPosed) {
             //steam chart
             let orderWithPosition = getDataInOrder(d.values, dataOrder,localId)
-            dataOrder
-            
             let ordered = orderWithPosition.order
             let pos = orderWithPosition.position
 
@@ -651,33 +649,15 @@ class Chart {
             return yS(previousSum) + toAdd;
           } else {
             //normal stacked area
-            if (scaleSelected == 0) {
-              //no chart to put before an other
-              let values = d.values.slice(0, localId);
-              let previousSum = values.reduce((a, b) => a + b, 0);
-              return yS(previousSum);
-            } else {
-              let values = d.values.slice();
-              //extracting the value to but before
-              let popped = values.splice(scaleSelected - 1, 1)[0];
-              //putting the value before
-              values.unshift(popped);
-              //console.log(values)
-              let sliceUntil = 0;
-              if (localId != scaleSelected - 1) {
-                if (localId < scaleSelected - 1) {
-                  sliceUntil = localId + 1;
-                } else {
-                  sliceUntil = localId;
-                }
-              }
-              //console.log(localId)
-              //console.log("sliceUntil "+sliceUntil)
-              values = values.slice(0, sliceUntil);
-              //console.log(values)
-              let previousSum = values.reduce((a, b) => a + b, 0);
-              return yS(previousSum);
-            }
+
+            let orderWithPosition = getDataInOrder(d.values, dataOrder,localId)
+            let ordered = orderWithPosition.order
+            let pos = orderWithPosition.position
+
+            let values = ordered.slice(0, pos);
+            let previousSum = values.reduce((a, b) => a + b, 0);
+            return yS(previousSum);
+
           }
         } else {
           //chart interleaving, everything from zero
@@ -702,28 +682,14 @@ class Chart {
             return yS(previousSum) + toAdd;
           } else {
             //normal stacked area
-            if (scaleSelected == 0) {
-              let values = d.values.slice(0, localId + 1);
-              let previousSum = values.reduce((a, b) => a + b, 0);
-              return yS(previousSum);
-            } else {
-              let values = d.values.slice();
-              let popped = values.splice(scaleSelected - 1, 1)[0];
-              values.unshift(popped);
 
-              let sliceUntil = 0;
-              if (localId != scaleSelected - 1) {
-                if (localId < scaleSelected - 1) {
-                  sliceUntil = localId + 1;
-                } else {
-                  sliceUntil = localId;
-                }
-              }
+            let orderWithPosition = getDataInOrder(d.values, dataOrder,localId)
+            let ordered = orderWithPosition.order
+            let pos = orderWithPosition.position
 
-              values = values.slice(0, sliceUntil + 1);
-              let previousSum = values.reduce((a, b) => a + b, 0);
-              return yS(previousSum); //+ toAdd
-            }
+            let values = ordered.slice(0, pos + 1);
+            let previousSum = values.reduce((a, b) => a + b, 0);
+            return yS(previousSum);
           }
         } else {
           //chart interleaving, simply return the top value

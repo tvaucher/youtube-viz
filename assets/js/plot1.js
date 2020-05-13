@@ -25,7 +25,7 @@
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = false;
-    let isStreamChart = true;
+    let isStreamChart = false;
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
@@ -68,7 +68,7 @@
       for (let i = 0; i < data.categories.length ; i++){
         dataOrder.push(i)
       }
-      //dataOrder = [4,3,2,1,5,6,0]
+      dataOrder = [4,3,2,1,5,6,0]
       displayedXInterval = [data.smallestDate, data.biggestDate]
 
       UI.setData({
