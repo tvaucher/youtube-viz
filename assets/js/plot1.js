@@ -162,7 +162,8 @@
       }else{
         categorySelected = id
       }
-      UI.removeVerticalLines()
+
+      addElementsToStackedArea(data);
 
       if(categorySelected==0){
         //no category
@@ -171,145 +172,109 @@
         UI.addFrontCharts(id-1, charts);
         UI.updateTitles(-1,id-1)
       }
-      console.log("cat "+ categorySelected)
 
-      /*if(catId == null){
-      categorySelected = 0
-    }else{
-    categorySelected = catId + 1
+
+      //finally, if we are not in the stream mode, we must update the y-axis
+      if(seeChartInterleaving || !isStreamChart){
+        adaptYScale()
+      }
+
+
+      //console.log("User just selected the category" + catId)*/
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function setStackSupperposed(newValue) {
+      /*stacksSupperpose = newValue;
+
+      interLeavingCheckBox.checked = !newValue;
+
+      let maxYScore = stacksSupperpose
+      ? data.maxScoreAtTimeStamp
+      : data.maxSingleScore;
+      UI.setData({
+      data: data,
+      maxYscore: maxYScore,
+      onBrush: userBrushed,
+    });
+    UI.drawYAxis();
+
+    adaptYScale(displayedXInterval);
+
+    addElementsToStackedArea(data);*/
   }
 
-  let value = 0
-  if (catId != null){
-  value = catId + 1
-}
-//yAxisSelectorChanged(value);
-console.log(value);
-
-if (catId == null) {
-UI.makeTitlesLookNormal();
-if (!stacksSupperpose) {
-UI.removeFrontCharts();
-UI.showFrameContainer();
-UI.renderUpperLines(upperLines);
-}
-} else {
-UI.addFrontCharts(catId, charts);
-UI.updateTitles(catId, catId);
-}
-//console.log("User just selected the category" + catId)*/
-}
 
 
 
+  function getChartInOrder(charts) {
+    if (categorySelected == 0) {
+      //normal order
+      return charts;
+    }
+    let ordered = [];
+    ordered.push(charts[categorySelected - 1]);
+    charts.forEach((c) => {
+      if (c.id != categorySelected - 1) {
+        ordered.push(c);
+      }
+    });
+    return ordered;
+  }
 
+  function adaptYScale() {
+    let scaleToUse = categorySelected
+    if (isStreamChart && !seeChartInterleaving) {
+      scaleToUse = 0;
+    }
 
+    var bounds = model.getMaxValuesBetween(
+    data,
+    displayedXInterval[0],
+    displayedXInterval[1],
+    scaleToUse
+  );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function setStackSupperposed(newValue) {
-  /*stacksSupperpose = newValue;
-
-  interLeavingCheckBox.checked = !newValue;
-
-  let maxYScore = stacksSupperpose
-  ? data.maxScoreAtTimeStamp
-  : data.maxSingleScore;
+  var maxBound = !seeChartInterleaving
+  ? bounds.maxScoreAtTimeStamp
+  : bounds.maxSingleScore;
   UI.setData({
   data: data,
-  maxYscore: maxYScore,
+  maxYscore: maxBound,
   onBrush: userBrushed,
 });
 UI.drawYAxis();
 
-adaptYScale(displayedXInterval);
-
-addElementsToStackedArea(data);*/
-}
-
-function shouldAdaptYScale(shouldAdapt) {
-  freezeYCheckBox.checked = !shouldAdapt;
-  adaptYScale(displayedXInterval);
-  if (!stacksSupperpose) {
-    heavyCompute();
-    UI.renderUpperLines(upperLines);
-  }
-
-}
-
-function yAxisSelectorChanged(newValue) {
-  scaleSelected = newValue;
-  shouldAdaptYScale(true);
-  addElementsToStackedArea(data);
-  //console.log(newValue)
-  //yAxisSelector.style.backgroundColor = newValue == 0 ? "#B1B1B1" : UI.colorForFadingIndex(newValue-1)
-  //yAxisSelector.style.color = newValue == 0 ? "black" : "#B1B1B1"
-}
 
 
 
-
-
-
-
-
-
-function getChartInOrder(charts) {
-  if (categorySelected == 0) {
-    //normal order
-    return charts;
-  }
-  let ordered = [];
-  ordered.push(charts[categorySelected - 1]);
-  charts.forEach((c) => {
-    if (c.id != categorySelected - 1) {
-      ordered.push(c);
-    }
-  });
-  return ordered;
-}
-
-function adaptYScale(forInterval) {
-  /*let scaleToUse = scaleSelected;
-  if (stacksSupperpose && streamChartWhenSupperPosed) {
-  scaleToUse = 0;
-}
-var bounds = model.getMaxValuesBetween(
-data,
-forInterval[0],
-forInterval[1],
-scaleToUse
-);
-var maxBound = stacksSupperpose
-? bounds.maxScoreAtTimeStamp
-: bounds.maxSingleScore;
-UI.setData({
-data: data,
-maxYscore: maxBound,
-onBrush: userBrushed,
-});
-UI.drawYAxis();
 
 for (var i = 0; i < charts.length; i++) {
 charts[i].rescaleY(maxBound);
 }
 for (var i = 0; i < upperLines.length; i++) {
 upperLines[i].rescaleY(maxBound);
-}*/
+}
 
 }
 
@@ -339,7 +304,7 @@ function heavyCompute() {
 function userBrushed(b) {
   displayedXInterval = b;
   UI.getXscale().domain(b);
-  adaptYScale(b);
+  adaptYScale();
 
   for (var i = 0; i < charts.length; i++) {
     charts[i].showOnly(b);
