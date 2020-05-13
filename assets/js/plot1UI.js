@@ -850,6 +850,7 @@
           .attr("id", "chart_nb_" + chart.id)
           .attr("d", chart.area)
           .attr("fill", colorForIndex(chart.id));
+          console.log(chart.id)
 
         if (withStroke) {
           chart.path.attr("stroke", "black").attr("stroke-width", "1");

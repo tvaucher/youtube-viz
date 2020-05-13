@@ -86,7 +86,7 @@
             id: i,
             stacksSupperpose: !seeChartInterleaving,
             streamChartWhenSupperPosed: isStreamChart,
-            scaleSelected:categorySelected == 0 ? null : categorySelected-1,
+            scaleSelected: categorySelected,
           })
         )
       }
@@ -99,7 +99,7 @@
             id: i,
             stacksSupperpose: !seeChartInterleaving,
             streamChartWhenSupperPosed: false,
-            scaleSelected:categorySelected == 0 ? null : categorySelected-1,
+            scaleSelected:categorySelected ,
           })
         )
       }
