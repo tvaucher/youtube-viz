@@ -595,6 +595,22 @@ function getCleanedInterval(b) {
   return b;
 }
 
+
+function getDataInOrder(data, order, chartId){
+  let ordered = []
+  let position = 0
+  order.forEach((o,i)=>{
+    ordered.push(data[o])
+    if(o == chartId){
+      position = i
+    }
+  })
+  return {
+    order: ordered,
+    position: position,
+  }
+}
+
 class Chart {
   constructor(options) {
     this.data = options.data;
@@ -603,12 +619,12 @@ class Chart {
     this.yScale = getYscale();
     const stacksSupperpose = options.stacksSupperpose;
     const streamChartWhenSupperPosed = options.streamChartWhenSupperPosed;
-    const scaleSelected = options.scaleSelected;
 
     let localName = this.data.categories[this.id];
     let localId = this.id;
     let xS = this.xScale;
     let yS = this.yScale;
+    let dataOrder = options.dataOrder;
 
     this.area = d3
     .area()
@@ -620,11 +636,17 @@ class Chart {
         if (stacksSupperpose) {
           if (streamChartWhenSupperPosed) {
             //steam chart
+            let orderWithPosition = getDataInOrder(d.values, dataOrder,localId)
+            dataOrder
+            
+            let ordered = orderWithPosition.order
+            let pos = orderWithPosition.position
+
             let toAdd = 0;
-            let totalSum = d.values.slice().reduce((a, b) => a + b, 0);
+            let totalSum = ordered.slice().reduce((a, b) => a + b, 0);
             let halfHeight = yS(totalSum / 2);
             toAdd = stackedAreaMargin.height / 2 - halfHeight;
-            let values = d.values.slice(0, localId);
+            let values = ordered.slice(0, pos);
             let previousSum = values.reduce((a, b) => a + b, 0);
             return yS(previousSum) + toAdd;
           } else {
@@ -668,10 +690,14 @@ class Chart {
         if (stacksSupperpose) {
           if (streamChartWhenSupperPosed) {
             //steam chart
-            let totalSum = d.values.slice().reduce((a, b) => a + b, 0);
+            let orderWithPosition = getDataInOrder(d.values, dataOrder,localId)
+            let ordered = orderWithPosition.order
+            let pos = orderWithPosition.position
+
+            let totalSum = ordered.slice().reduce((a, b) => a + b, 0);
             let halfHeight = yS(totalSum / 2);
             let toAdd = stackedAreaMargin.height / 2 - halfHeight;
-            let values = d.values.slice(0, localId + 1);
+            let values = ordered.slice(0, pos + 1);
             let previousSum = values.reduce((a, b) => a + b, 0);
             return yS(previousSum) + toAdd;
           } else {
@@ -1205,10 +1231,6 @@ function addVerticalLines(timestamps, color, dateToDisplay) {
   }
 }
 
-function setCategorySelectedToNull() {
-  categorySelected.value = null;
-}
-
 function colorForIndex(index) {
   var colors = [
     "#0DEDBA  ",
@@ -1261,7 +1283,6 @@ return {
   removeVerticalLines:removeVerticalLines,
   colorForIndex: colorForIndex,
   colorForFadingIndex: colorForFadingIndex,
-  setCategorySelectedToNull: setCategorySelectedToNull,
   showFrameContainer: showFrameContainer,
   hideFrameContainer: hideFrameContainer,
 };

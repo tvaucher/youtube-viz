@@ -25,7 +25,7 @@
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = false;
-    let isStreamChart = false;
+    let isStreamChart = true;
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
@@ -68,6 +68,7 @@
       for (let i = 0; i < data.categories.length ; i++){
         dataOrder.push(i)
       }
+      //dataOrder = [4,3,2,1,5,6,0]
       displayedXInterval = [data.smallestDate, data.biggestDate]
 
       UI.setData({
@@ -94,7 +95,6 @@
             id: i,
             stacksSupperpose: !seeChartInterleaving,
             streamChartWhenSupperPosed: isStreamChart,
-            scaleSelected: categorySelected,
           })
         )
       }
@@ -109,7 +109,6 @@
               dataOrder:dataOrder,
               id: i,
               stacksSupperpose: !seeChartInterleaving,
-              scaleSelected: categorySelected == 0 ? null : categorySelected-1,
             })
           );
         }
