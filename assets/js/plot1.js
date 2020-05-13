@@ -64,16 +64,18 @@
     d3.csv("assets/data/weekly_score.csv", function (d) {
       data = model.prepareData(d);
       displayedXInterval = [data.smallestDate, data.biggestDate]
-      setChartInterleavingValue(seeChartInterleaving)
-      setStreamGraphValue(isStreamChart)
 
       UI.setData({
         data: data,
         maxYscore: seeChartInterleaving ?  data.maxSingleScore : data.maxScoreAtTimeStamp,
         onBrush: userBrushed,
       });
+
       UI.prepareElements();
       addElementsToStackedArea(data);
+
+      setChartInterleavingValue(seeChartInterleaving)
+      setStreamGraphValue(isStreamChart)
     });
 
     function addElementsToStackedArea(data) {
@@ -126,19 +128,7 @@
     } //end of create plot function
 
 
-//-------------------------------------------------NAME ME --------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
+//-------------------------------------------------PLOT CHANGES --------------------------------------------
 
 
     function setChartInterleavingValue(value){
@@ -154,10 +144,49 @@
     function setStreamGraphValue(value){
       isStreamChart = value
       streamGraphCheckBox.checked = isStreamChart
+
+      if(!seeChartInterleaving){
+        addElementsToStackedArea(data);
+        if(categorySelected != 0){
+          //yAxisSelectorChanged(scaleSelected);
+        }
+      }
     }
 
-    function selectACategory(nb){
-      console.log(nb)
+    function selectACategory(id){
+      categorySelected = categorySelected == id+1 ? 0 : id+1
+      if(categorySelected==0){
+        UI.updateTitles(id,-1)
+      }else{
+        UI.updateTitles(-1,id)
+      }
+
+      console.log(categorySelected)
+      /*if(catId == null){
+          categorySelected = 0
+      }else{
+        categorySelected = catId + 1
+      }
+
+      let value = 0
+      if (catId != null){
+        value = catId + 1
+      }
+      //yAxisSelectorChanged(value);
+      console.log(value);
+
+      if (catId == null) {
+        UI.makeTitlesLookNormal();
+        if (!stacksSupperpose) {
+          UI.removeFrontCharts();
+          UI.showFrameContainer();
+          UI.renderUpperLines(upperLines);
+        }
+      } else {
+        UI.addFrontCharts(catId, charts);
+        UI.updateTitles(catId, catId);
+      }
+      //console.log("User just selected the category" + catId)*/
     }
 
 
@@ -209,17 +238,6 @@
           UI.renderUpperLines(upperLines);
         }
 
-    }
-
-    function setSteamGraph(futureValue) {
-      streamChartWhenSupperPosed = futureValue;
-      streamGraphCheckBox.checked = streamChartWhenSupperPosed;
-      if (stacksSupperpose) {
-        addElementsToStackedArea(data);
-        if (scaleSelected != 0) {
-          yAxisSelectorChanged(scaleSelected);
-        }
-      }
     }
 
     function yAxisSelectorChanged(newValue) {
@@ -311,13 +329,7 @@
 //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
     function mouseClickedInTitle(id){
-      categorySelected = categorySelected == id+1 ? 0 : id+1
-      if(categorySelected==0){
-        UI.updateTitles(id,-1)
-      }else{
-        UI.updateTitles(-1,id)
-      }
-      console.log(categorySelected)
+      selectACategory(id)
     }
 
     function mouseOverTitle(id) {
@@ -340,33 +352,7 @@
       }
     }
 
-    function userSelectedCategory(catId) {
-      /*if(catId == null){
-          categorySelected = 0
-      }else{
-        categorySelected = catId + 1
-      }
 
-      let value = 0
-      if (catId != null){
-        value = catId + 1
-      }
-      //yAxisSelectorChanged(value);
-      console.log(value);
-
-      if (catId == null) {
-        UI.makeTitlesLookNormal();
-        if (!stacksSupperpose) {
-          UI.removeFrontCharts();
-          UI.showFrameContainer();
-          UI.renderUpperLines(upperLines);
-        }
-      } else {
-        UI.addFrontCharts(catId, charts);
-        UI.updateTitles(catId, catId);
-      }
-      //console.log("User just selected the category" + catId)*/
-    }
 
     function userBrushed(b) {
       displayedXInterval = b;
