@@ -6,7 +6,7 @@
     const UI = App.Plot1UI;
 
     /*When this timer fires, it compute the chart interleaving order*/
-    var heavyComputationTimer = null;
+    var timerBeforeComputingChartInterleaving = null;
     let isTimeFrozen = false;
 
     //the data from the csv file
@@ -90,23 +90,7 @@
           })
         )
       }
-//--
-      let charts2 = [];
-      for (let i = 0; i < data.categories.length; i++) {
-        charts2.push(
-          UI.createChart({
-            data: data,
-            id: i,
-            stacksSupperpose: !seeChartInterleaving,
-            streamChartWhenSupperPosed: false,
-            scaleSelected:categorySelected ,
-          })
-        )
-      }
 
-      console.log(charts)
-      console.log(charts2)
-      console.log("-")
       //initiate the lines
       upperLines = [];
       if (seeChartInterleaving) {
@@ -130,7 +114,6 @@
       UI.makeTitlesLookNormal();
 
       let chartInOrder = getChartInOrder(charts);
-      console.log(chartInOrder)
 
       if(seeChartInterleaving) {
         UI.renderCharts(chartInOrder, false);
@@ -143,14 +126,7 @@
     } //end of create plot function
 
 
-
-
-
-
-
-
-
-
+//-------------------------------------------------NAME ME --------------------------------------------
 
 
 
@@ -308,36 +284,7 @@
 
     }
 
-    function userBrushed(b) {
-      displayedXInterval = b;
-      UI.getXscale().domain(b);
-      adaptYScale(b);
 
-      for (var i = 0; i < charts.length; i++) {
-        charts[i].showOnly(b);
-      }
-      for (var i = 0; i < upperLines.length; i++) {
-        upperLines[i].showOnly(b);
-      }
-
-      window.clearInterval(heavyComputationTimer);
-      UI.removePartsOfChart();
-      if (seeChartInterleaving) {
-        UI.removePartsOfChart();
-        //UI.removeLines()
-        for (var i = 0; i < upperLines.length; i++) {
-          upperLines[i].showOnly(b);
-        }
-        heavyComputationTimer = window.setTimeout(function () {
-          heavyCompute();
-          UI.renderUpperLines(upperLines);
-          if (categorySelected != null) {
-            UI.addFrontCharts(categorySelected, charts);
-          }
-        }, 250);
-      }
-      //addPartsOfChart()
-    }
 
     function heavyCompute() {
       let orderTimeStamps = model.computeTimeStampsBreaks(
@@ -355,22 +302,34 @@
       );
     }
 
+
+
+
+
+
+
+//-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
+
+    function mouseClickedInTitle(id){
+
+    }
+
     function mouseOverTitle(id) {
-      /*if (categorySelected == null) {
-        //console.log("Mouse over title " + data.categories[id])
+      //console.log("Mouse over title " + data.categories[id])
+      if (categorySelected == 0) {
         UI.addFrontCharts(id, charts);
         UI.hideFrameContainer();
         UI.removeLines();
-      }*/
+      }
     }
 
     function mouseLeftTitle(id) {
-      /*if (categorySelected == null) {
-        //console.log("Mouse left title " + data.categories[id])
+      //console.log("Mouse left title " + data.categories[id])
+      if (categorySelected == 0) {
         UI.removeFrontCharts();
         UI.showFrameContainer();
         UI.renderUpperLines(upperLines);
-      }*/
+      }
     }
 
     function userSelectedCategory(catId) {
@@ -399,6 +358,37 @@
         UI.updateTitles(catId, catId);
       }
       //console.log("User just selected the category" + catId)*/
+    }
+
+    function userBrushed(b) {
+      displayedXInterval = b;
+      UI.getXscale().domain(b);
+      adaptYScale(b);
+
+      for (var i = 0; i < charts.length; i++) {
+        charts[i].showOnly(b);
+      }
+      for (var i = 0; i < upperLines.length; i++) {
+        upperLines[i].showOnly(b);
+      }
+
+      window.clearInterval(timerBeforeComputingChartInterleaving);
+      UI.removePartsOfChart();
+      if (seeChartInterleaving) {
+        UI.removePartsOfChart();
+        //UI.removeLines()
+        for (var i = 0; i < upperLines.length; i++) {
+          upperLines[i].showOnly(b);
+        }
+        timerBeforeComputingChartInterleaving = window.setTimeout(function () {
+          heavyCompute();
+          UI.renderUpperLines(upperLines);
+          if (categorySelected != null) {
+            UI.addFrontCharts(categorySelected, charts);
+          }
+        }, 250);
+      }
+      //addPartsOfChart()
     }
 
     function mouseInChart(chartId) {
@@ -445,12 +435,13 @@
     }
 
     return {
+      mouseClickedInTitle:mouseClickedInTitle,
       mouseOverTitle: mouseOverTitle,
       mouseLeftTitle: mouseLeftTitle,
+
       mouseInChart: mouseInChart,
       mouseMoveInFrontChart: mouseMoveInFrontChart,
       mouseMoveOutOfCharts: mouseMoveOutOfCharts,
-      userSelectedCategory: userSelectedCategory,
       mouseClickedInPartOfChart: mouseClickedInPartOfChart,
       updateVerticalLineInUI:updateVerticalLineInUI,
     };

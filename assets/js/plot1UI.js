@@ -52,7 +52,7 @@
     let chartsContainer = null;
     let frontChartsPaths = null;
     let lastIndexHighlighted = null;
-    let categorySelected = new Proxy(
+    /*let categorySelected = new Proxy(
       { value: null },
       {
         set: (target, key, value) => {
@@ -62,7 +62,7 @@
           return true;
         },
       }
-    );
+    );*/
     let partOfChartContainer = null;
     let sliderBox = null;
     let bbrush = null;
@@ -405,12 +405,7 @@
         });
 
         title.addEventListener("click", function () {
-          if (i == categorySelected.value) {
-            categorySelected.value = null;
-          } else {
-            categorySelected.value = i;
-          }
-          App.Plot1.userSelectedCategory(categorySelected.value);
+          App.Plot1.mouseClickedInTitle(i);
         });
         titles.push(title);
       });
@@ -850,7 +845,6 @@
           .attr("id", "chart_nb_" + chart.id)
           .attr("d", chart.area)
           .attr("fill", colorForIndex(chart.id));
-          console.log(chart.id)
 
         if (withStroke) {
           chart.path.attr("stroke", "black").attr("stroke-width", "1");
@@ -1031,14 +1025,6 @@
       }
     }
 
-    function makeTitlesLookNormal() {
-      titles.forEach((title, i) => {
-        title.style.color = colorForIndex(i);
-        title.style.border = null;
-        title.style.background = null;
-      });
-    }
-
     function addFrontCharts(indexSelected, charts) {
       removeFrontCharts();
       frontChartsPaths = [];
@@ -1079,25 +1065,37 @@
 
     function updateTitles(indexSelected, indexClicked) {
       titles.forEach((title, i) => {
-        updateTitleUI(title, i, i == indexSelected, i == indexClicked);
+        let state = 2 //normal state
+        if(indexClicked == i){
+          state = 3
+        }else if(indexSelected >= 0 && indexClicked >=0 && i !=indexSelected && i != indexClicked ){
+          state = 1
+        }
+        updateTitleUI(title, i,state);
       });
     }
 
-    function updateTitleUI(title, index, isSelected, isClicked) {
-      title.style.color = isSelected
-        ? colorForIndex(index)
-        : colorForFadingIndex(index);
-      if (isSelected || isClicked) {
-        title.style.border = "2px solid";
-        title.style.borderRadius = "0.5em";
-        if (isClicked) {
-          title.style.background = colorForFadingIndex(index);
-        } else {
-          title.style.background = null;
-        }
-      } else {
+    function updateTitleUI(title, index, state) {
+      //3 states:
+      //1) hidden: fading color, no border nor backgroundColor
+      //2) hover: normal color with border
+      //3)selected: normal color with border and background
+
+      if(state == 1){
+        title.style.color = colorForFadingIndex(index)
         title.style.border = null;
         title.style.background = null;
+      }else if(state == 2){
+        title.style.color = colorForIndex(index)
+        title.style.border = "2px solid";
+        title.style.borderRadius = "0.5em";
+        title.style.background = null;
+      }else{
+        title.style.color = colorForIndex(index)
+        title.style.border = "2px solid";
+        title.style.borderRadius = "0.5em";
+        title.style.background = null;
+        title.style.background = colorForFadingIndex(index);
       }
     }
 
@@ -1264,7 +1262,6 @@
       addFrontCharts: addFrontCharts,
       removeFrontCharts: removeFrontCharts,
       updateTitles: updateTitles,
-      makeTitlesLookNormal: makeTitlesLookNormal,
       addVerticalLines: addVerticalLines,
       colorForIndex: colorForIndex,
       colorForFadingIndex: colorForFadingIndex,
