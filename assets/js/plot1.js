@@ -11,6 +11,8 @@
 
     //the data from the csv file
     let data = null;
+    //the order in the one to draw the data
+    let dataOrder = [];
 
     /*The graphicals elements in the chartArea*/
     let charts = [];
@@ -63,6 +65,9 @@
     //load the csv file init the graph
     d3.csv("assets/data/weekly_score.csv", function (d) {
       data = model.prepareData(d);
+      for (let i = 0; i < data.categories.length ; i++){
+        dataOrder.push(i)
+      }
       displayedXInterval = [data.smallestDate, data.biggestDate]
 
       UI.setData({
@@ -85,6 +90,7 @@
         charts.push(
           UI.createChart({
             data: data,
+            dataOrder:dataOrder,
             id: i,
             stacksSupperpose: !seeChartInterleaving,
             streamChartWhenSupperPosed: isStreamChart,
@@ -100,6 +106,7 @@
           upperLines.push(
             UI.createUpperLine({
               data: data,
+              dataOrder:dataOrder,
               id: i,
               stacksSupperpose: !seeChartInterleaving,
               scaleSelected: categorySelected == 0 ? null : categorySelected-1,
@@ -151,7 +158,7 @@
         if(categorySelected != 0){
           UI.addFrontCharts(categorySelected-1, charts);
           UI.updateTitles(-1,categorySelected-1)
-          //yAxisSelectorChanged(scaleSelected);
+          adaptYScale()
         }
       }
     }
@@ -163,21 +170,23 @@
         categorySelected = id
       }
 
+      UI.removeVerticalLines()
       addElementsToStackedArea(data);
 
       if(categorySelected==0){
         //no category
         UI.updateTitles(id-1,-1)
+        if(id>0){
+          UI.addFrontCharts(id-1, charts);
+        }
       }else{
         UI.addFrontCharts(id-1, charts);
         UI.updateTitles(-1,id-1)
       }
 
-
-      //finally, if we are not in the stream mode, we must update the y-axis
-      if(seeChartInterleaving || !isStreamChart){
+      //finally, we must update the y-axis
         adaptYScale()
-      }
+
 
 
       //console.log("User just selected the category" + catId)*/
@@ -197,32 +206,6 @@
 
 
 
-
-
-
-
-
-
-
-    function setStackSupperposed(newValue) {
-      /*stacksSupperpose = newValue;
-
-      interLeavingCheckBox.checked = !newValue;
-
-      let maxYScore = stacksSupperpose
-      ? data.maxScoreAtTimeStamp
-      : data.maxSingleScore;
-      UI.setData({
-      data: data,
-      maxYscore: maxYScore,
-      onBrush: userBrushed,
-    });
-    UI.drawYAxis();
-
-    adaptYScale(displayedXInterval);
-
-    addElementsToStackedArea(data);*/
-  }
 
 
 
@@ -249,175 +232,175 @@
     }
 
     var bounds = model.getMaxValuesBetween(
-    data,
-    displayedXInterval[0],
-    displayedXInterval[1],
-    scaleToUse
-  );
+      data,
+      displayedXInterval[0],
+      displayedXInterval[1],
+      scaleToUse
+    );
 
-  var maxBound = !seeChartInterleaving
-  ? bounds.maxScoreAtTimeStamp
-  : bounds.maxSingleScore;
-  UI.setData({
-  data: data,
-  maxYscore: maxBound,
-  onBrush: userBrushed,
-});
-UI.drawYAxis();
-
-
-
-
-
-for (var i = 0; i < charts.length; i++) {
-charts[i].rescaleY(maxBound);
-}
-for (var i = 0; i < upperLines.length; i++) {
-upperLines[i].rescaleY(maxBound);
-}
-
-}
-
-
-
-function heavyCompute() {
-  let orderTimeStamps = model.computeTimeStampsBreaks(
-    upperLines,
-    data,
-    UI.getXscale(),
-    displayedXInterval
-  );
-  let chartInterLeaving = model.computeChartInterLeaving(orderTimeStamps);
-  UI.addPartsOfChart(
-    data.smallestDate.getTime(),
-    chartInterLeaving,
-    !seeChartInterleaving,
-    data
-  );
-}
+    var maxBound = !seeChartInterleaving
+    ? bounds.maxScoreAtTimeStamp
+    : bounds.maxSingleScore;
+    UI.setData({
+      data: data,
+      maxYscore: maxBound,
+      onBrush: userBrushed,
+    });
+    UI.drawYAxis();
 
 
 
 
 
+    for (var i = 0; i < charts.length; i++) {
+      charts[i].rescaleY(maxBound);
+    }
+    for (var i = 0; i < upperLines.length; i++) {
+      upperLines[i].rescaleY(maxBound);
+    }
 
-function userBrushed(b) {
-  displayedXInterval = b;
-  UI.getXscale().domain(b);
-  adaptYScale();
-
-  for (var i = 0; i < charts.length; i++) {
-    charts[i].showOnly(b);
-  }
-  for (var i = 0; i < upperLines.length; i++) {
-    upperLines[i].showOnly(b);
   }
 
-  window.clearInterval(timerBeforeComputingChartInterleaving);
-  UI.removePartsOfChart();
-  if (seeChartInterleaving) {
-    UI.removePartsOfChart();
-    //UI.removeLines()
+
+
+  function heavyCompute() {
+    let orderTimeStamps = model.computeTimeStampsBreaks(
+      upperLines,
+      data,
+      UI.getXscale(),
+      displayedXInterval
+    );
+    let chartInterLeaving = model.computeChartInterLeaving(orderTimeStamps);
+    UI.addPartsOfChart(
+      data.smallestDate.getTime(),
+      chartInterLeaving,
+      !seeChartInterleaving,
+      data
+    );
+  }
+
+
+
+
+
+
+  function userBrushed(b) {
+    displayedXInterval = b;
+    UI.getXscale().domain(b);
+    adaptYScale();
+
+    for (var i = 0; i < charts.length; i++) {
+      charts[i].showOnly(b);
+    }
     for (var i = 0; i < upperLines.length; i++) {
       upperLines[i].showOnly(b);
     }
-    timerBeforeComputingChartInterleaving = window.setTimeout(function () {
-      heavyCompute();
-      UI.renderUpperLines(upperLines);
-      if (categorySelected != 0) {
-        UI.addFrontCharts(categorySelected, charts);
+
+    window.clearInterval(timerBeforeComputingChartInterleaving);
+    UI.removePartsOfChart();
+    if (seeChartInterleaving) {
+      UI.removePartsOfChart();
+      //UI.removeLines()
+      for (var i = 0; i < upperLines.length; i++) {
+        upperLines[i].showOnly(b);
       }
-    }, 250);
+      timerBeforeComputingChartInterleaving = window.setTimeout(function () {
+        heavyCompute();
+        UI.renderUpperLines(upperLines);
+        if (categorySelected != 0) {
+          UI.addFrontCharts(categorySelected, charts);
+        }
+      }, 250);
+    }
+    //addPartsOfChart()
   }
-  //addPartsOfChart()
-}
-//-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
+  //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
-function mouseClickedInTitle(id){
-  selectACategory(id+1)
-}
+  function mouseClickedInTitle(id){
+    selectACategory(id+1)
+  }
 
-function clickInFrontChart(id){
-  selectACategory(id+1)
-}
+  function clickInFrontChart(id){
+    selectACategory(id+1)
+  }
 
-function mouseOverTitle(id) {
-  //console.log("Mouse over title " + data.categories[id])
-  if (categorySelected == 0) {
-    UI.addFrontCharts(id, charts);
+  function mouseOverTitle(id) {
+    //console.log("Mouse over title " + data.categories[id])
+    if (categorySelected == 0) {
+      UI.addFrontCharts(id, charts);
+      UI.hideFrameContainer();
+      UI.removeLines();
+      UI.updateTitles(id,-1)
+    }
+  }
+
+  function mouseLeftTitle(id) {
+    //console.log("Mouse left title " + data.categories[id])
+    if (categorySelected == 0) {
+      UI.removeFrontCharts();
+      UI.showFrameContainer();
+      UI.renderUpperLines(upperLines);
+      UI.updateTitles(-1,-1)
+    }
+  }
+
+  function mouseInChart(chartId) {
+    //console.log("Mouse went inside chart "+ chartId)
+    if (isTimeFrozen) return;
+    if (categorySelected == 0 && !seeChartInterleaving) {
+      UI.addFrontCharts(chartId, charts);
+      UI.updateTitles(chartId, -1)
+    }
+  }
+  function mouseMoveOutOfCharts(atDate) {
+    if (isTimeFrozen) return;
+    //console.log("Mouse move out of the charts at Date"+atDate)
+    if (categorySelected == 0) {
+      UI.removeFrontCharts();
+      UI.updateTitles(-1, -1)
+    }
+    updateVerticalLineInUI(atDate.getTime())
+  }
+
+  function mouseMoveInFrontChart(chartId, atDate) {
+    if (isTimeFrozen) return;
+    updateVerticalLineInUI(atDate.getTime())
+  }
+
+  function updateVerticalLineInUI(timestamp){
+    let color =
+    categorySelected == 0
+    ? "#B1B1B1"
+    : UI.colorForIndex(categorySelected-1);
+    let closestIndex = model.getClosestIndex(new Date(timestamp), data);
+    UI.addVerticalLines(
+      [timestamp],
+      color,
+      data.values[closestIndex].date
+    );
+
+  }
+
+  function mouseClickedInPartOfChart(chartId) {
+    userSelectedCategory(chartId);
     UI.hideFrameContainer();
     UI.removeLines();
-    UI.updateTitles(id,-1)
   }
-}
-
-function mouseLeftTitle(id) {
-  //console.log("Mouse left title " + data.categories[id])
-  if (categorySelected == 0) {
-    UI.removeFrontCharts();
-    UI.showFrameContainer();
-    UI.renderUpperLines(upperLines);
-    UI.updateTitles(-1,-1)
-  }
-}
-
-function mouseInChart(chartId) {
-  //console.log("Mouse went inside chart "+ chartId)
-  if (isTimeFrozen) return;
-  if (categorySelected == 0 && !seeChartInterleaving) {
-    UI.addFrontCharts(chartId, charts);
-    UI.updateTitles(chartId, -1)
-  }
-}
-function mouseMoveOutOfCharts(atDate) {
-  if (isTimeFrozen) return;
-  //console.log("Mouse move out of the charts at Date"+atDate)
-  if (categorySelected == 0) {
-    UI.removeFrontCharts();
-    UI.updateTitles(-1, -1)
-  }
-  updateVerticalLineInUI(atDate.getTime())
-}
-
-function mouseMoveInFrontChart(chartId, atDate) {
-  if (isTimeFrozen) return;
-  updateVerticalLineInUI(atDate.getTime())
-}
-
-function updateVerticalLineInUI(timestamp){
-  let color =
-  categorySelected == 0
-  ? "#B1B1B1"
-  : UI.colorForIndex(categorySelected-1);
-  let closestIndex = model.getClosestIndex(new Date(timestamp), data);
-  UI.addVerticalLines(
-    [timestamp],
-    color,
-    data.values[closestIndex].date
-  );
-
-}
-
-function mouseClickedInPartOfChart(chartId) {
-  userSelectedCategory(chartId);
-  UI.hideFrameContainer();
-  UI.removeLines();
-}
 
 
 
-return {
-  mouseClickedInTitle:mouseClickedInTitle,
-  mouseOverTitle: mouseOverTitle,
-  mouseLeftTitle: mouseLeftTitle,
+  return {
+    mouseClickedInTitle:mouseClickedInTitle,
+    mouseOverTitle: mouseOverTitle,
+    mouseLeftTitle: mouseLeftTitle,
 
-  mouseInChart: mouseInChart,
-  mouseMoveInFrontChart: mouseMoveInFrontChart,
-  mouseMoveOutOfCharts: mouseMoveOutOfCharts,
-  mouseClickedInPartOfChart: mouseClickedInPartOfChart,
-  updateVerticalLineInUI:updateVerticalLineInUI,
-  clickInFrontChart:clickInFrontChart,
-};
+    mouseInChart: mouseInChart,
+    mouseMoveInFrontChart: mouseMoveInFrontChart,
+    mouseMoveOutOfCharts: mouseMoveOutOfCharts,
+    mouseClickedInPartOfChart: mouseClickedInPartOfChart,
+    updateVerticalLineInUI:updateVerticalLineInUI,
+    clickInFrontChart:clickInFrontChart,
+  };
 })();
 App.Plot1 = Plot1;
 window.App = App;
