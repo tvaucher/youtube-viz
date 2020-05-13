@@ -340,6 +340,13 @@
 
     function userSelectedCategory(catId) {
       categorySelected = catId;
+      let value = 0
+      if (catId != null){
+        value = catId + 1
+      }
+      //yAxisSelectorChanged(value);
+      console.log(value);
+
       if (catId == null) {
         UI.makeTitlesLookNormal();
         if (!stacksSupperpose) {
@@ -351,6 +358,7 @@
         UI.addFrontCharts(catId, charts);
         UI.updateTitles(catId, catId);
       }
+
 
       //console.log("User just selected the category" + catId)
     }
