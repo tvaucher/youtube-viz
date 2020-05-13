@@ -1060,32 +1060,39 @@
 
       lastIndexHighlighted = indexSelected;
       addEventListenersInFrontChart(indexSelected, frontChartsPaths, charts);
-      updateTitles(indexSelected, -1);
     }
 
     function updateTitles(indexSelected, indexClicked) {
       titles.forEach((title, i) => {
-        let state = 2 //normal state
-        if(indexClicked == i){
-          state = 3
-        }else if(indexSelected >= 0 && indexClicked >=0 && i !=indexSelected && i != indexClicked ){
-          state = 1
+        let state = 1 //normal state
+        if((indexSelected >= 0 || indexClicked >=0) && i !=indexSelected && i != indexClicked ){
+          state = 2//hidden
+        }else if(indexSelected ==i && indexClicked!=i){
+            state = 3//hover
+        }else if(indexClicked==i){
+          state = 4//selected
         }
         updateTitleUI(title, i,state);
       });
     }
 
     function updateTitleUI(title, index, state) {
-      //3 states:
-      //1) hidden: fading color, no border nor backgroundColor
-      //2) hover: normal color with border
-      //3)selected: normal color with border and background
+      //4 states:
+      //1) normal: normal color, no border, no backgroundColor
+      //2) hidden: fading color, no border no backgroundColor
+      //3) hover: normal color with border without background
+      //4)selected: normal color with border and background
 
       if(state == 1){
-        title.style.color = colorForFadingIndex(index)
+        title.style.color = colorForIndex(index)
         title.style.border = null;
         title.style.background = null;
       }else if(state == 2){
+        title.style.color = colorForFadingIndex(index)
+        title.style.border = null;
+        title.style.background = null;
+        title.style.background = null;
+      }else if(state == 3){
         title.style.color = colorForIndex(index)
         title.style.border = "2px solid";
         title.style.borderRadius = "0.5em";

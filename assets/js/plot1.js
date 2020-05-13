@@ -111,7 +111,7 @@
       UI.removeLines();
       UI.removePartsOfChart();
       UI.removeFrontCharts();
-      UI.makeTitlesLookNormal();
+      UI.updateTitles(-1,-1);
 
       let chartInOrder = getChartInOrder(charts);
 
@@ -311,7 +311,13 @@
 //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
     function mouseClickedInTitle(id){
-
+      categorySelected = categorySelected == id+1 ? 0 : id+1
+      if(categorySelected==0){
+        UI.updateTitles(id,-1)
+      }else{
+        UI.updateTitles(-1,id)
+      }
+      console.log(categorySelected)
     }
 
     function mouseOverTitle(id) {
@@ -320,6 +326,7 @@
         UI.addFrontCharts(id, charts);
         UI.hideFrameContainer();
         UI.removeLines();
+        UI.updateTitles(id,-1)
       }
     }
 
@@ -329,6 +336,7 @@
         UI.removeFrontCharts();
         UI.showFrameContainer();
         UI.renderUpperLines(upperLines);
+        UI.updateTitles(-1,-1)
       }
     }
 
