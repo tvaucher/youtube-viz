@@ -22,7 +22,7 @@
     let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = true;
+    let seeChartInterleaving = false;
     let isStreamChart = false;
 
     //the user controls
@@ -146,7 +146,10 @@
       streamGraphCheckBox.checked = isStreamChart
 
       if(!seeChartInterleaving){
+        //visible changes
         addElementsToStackedArea(data);
+        selectACategory(categorySelected)
+        console.log("öLJ")
         if(categorySelected != 0){
           //yAxisSelectorChanged(scaleSelected);
         }
@@ -154,16 +157,22 @@
     }
 
     function selectACategory(id){
-      UI.addFrontCharts(id, charts);
-      UI.removeVerticalLines()
-      categorySelected = categorySelected == id+1 ? 0 : id+1
-      if(categorySelected==0){
-        UI.updateTitles(id,-1)
+      if(id == categorySelected){
+        categorySelected = 0
       }else{
-        UI.updateTitles(-1,id)
+        categorySelected = id
+      }
+      UI.removeVerticalLines()
+      console.log(categorySelected)
+
+      if(categorySelected==0){
+        //no category
+        UI.updateTitles(id-1,-1)
+      }else{
+        UI.addFrontCharts(id-1, charts);
+        UI.updateTitles(-1,id-1)
       }
 
-      console.log(categorySelected)
       /*if(catId == null){
       categorySelected = 0
     }else{
@@ -360,11 +369,11 @@ function userBrushed(b) {
 //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
 function mouseClickedInTitle(id){
-  selectACategory(id)
+  selectACategory(id+1)
 }
 
 function clickInFrontChart(id){
-  selectACategory(id)
+  selectACategory(id+1)
 }
 
 function mouseOverTitle(id) {
