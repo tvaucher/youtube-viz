@@ -24,7 +24,7 @@
     let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = false;
+    let seeChartInterleaving = true;
     let isStreamChart = false;
 
     //the user controls
@@ -121,15 +121,15 @@
       UI.removeFrontCharts();
       UI.updateTitles(-1,-1);
 
-      let chartInOrder = getChartInOrder(charts);
-
       if(seeChartInterleaving) {
-        UI.renderCharts(chartInOrder, false);
+        UI.renderCharts(charts, false);
         UI.renderUpperLines(upperLines);
+        if(categorySelected == 0){
         heavyCompute();
         UI.renderUpperLines(upperLines);
+      }
       } else {
-        UI.renderCharts(chartInOrder, true);
+        UI.renderCharts(charts, true);
       }
     } //end of create plot function
 
@@ -145,6 +145,9 @@
       } else {
         streamGraphXbSpan.style.display = "inline"
       }
+
+      adaptYScale();
+      addElementsToStackedArea(data);
     }
 
     function setStreamGraphValue(value){
@@ -168,6 +171,7 @@
       }else{
         categorySelected = id
       }
+      adaptYScale()
 
       UI.removeVerticalLines()
       addElementsToStackedArea(data);
@@ -183,8 +187,8 @@
         UI.updateTitles(-1,id-1)
       }
 
+
       //finally, we must update the y-axis
-        adaptYScale()
 
 
 
@@ -209,20 +213,7 @@
 
 
 
-  function getChartInOrder(charts) {
-    if (categorySelected == 0) {
-      //normal order
-      return charts;
-    }
-    let ordered = [];
-    ordered.push(charts[categorySelected - 1]);
-    charts.forEach((c) => {
-      if (c.id != categorySelected - 1) {
-        ordered.push(c);
-      }
-    });
-    return ordered;
-  }
+
 
   function adaptYScale() {
     let scaleToUse = categorySelected
@@ -285,7 +276,6 @@
 
   function userBrushed(b) {
     displayedXInterval = b;
-    UI.getXscale().domain(b);
     adaptYScale();
 
     for (var i = 0; i < charts.length; i++) {
@@ -296,17 +286,16 @@
     }
 
     window.clearInterval(timerBeforeComputingChartInterleaving);
-    UI.removePartsOfChart();
     if (seeChartInterleaving) {
       UI.removePartsOfChart();
-      //UI.removeLines()
       for (var i = 0; i < upperLines.length; i++) {
         upperLines[i].showOnly(b);
       }
       timerBeforeComputingChartInterleaving = window.setTimeout(function () {
-        heavyCompute();
-        UI.renderUpperLines(upperLines);
-        if (categorySelected != 0) {
+        if(categorySelected == 0){
+          heavyCompute();
+          UI.renderUpperLines(upperLines);
+        }else {
           UI.addFrontCharts(categorySelected, charts);
         }
       }, 250);
@@ -316,15 +305,20 @@
   //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
   function mouseClickedInTitle(id){
+    console.log("mouseClickedInTitle " +id)
     selectACategory(id+1)
   }
 
   function clickInFrontChart(id){
+    console.log("clickInFrontChart " +id)
     selectACategory(id+1)
+    if(categorySelected == 0){
+      UI.removeFrontCharts()
+    }
   }
 
   function mouseOverTitle(id) {
-    //console.log("Mouse over title " + data.categories[id])
+    console.log("Mouse over title " + data.categories[id])
     if (categorySelected == 0) {
       UI.addFrontCharts(id, charts);
       UI.hideFrameContainer();
@@ -334,7 +328,7 @@
   }
 
   function mouseLeftTitle(id) {
-    //console.log("Mouse left title " + data.categories[id])
+    console.log("Mouse left title " + data.categories[id])
     if (categorySelected == 0) {
       UI.removeFrontCharts();
       UI.showFrameContainer();
@@ -344,16 +338,26 @@
   }
 
   function mouseInChart(chartId) {
-    //console.log("Mouse went inside chart "+ chartId)
+    console.log("Mouse went inside chart "+ chartId)
     if (isTimeFrozen) return;
     if (categorySelected == 0 && !seeChartInterleaving) {
       UI.addFrontCharts(chartId, charts);
+    }
+
+    if (categorySelected == 0){
+      console.log(chartId)
       UI.updateTitles(chartId, -1)
     }
   }
+
+  function mouseInPartOfChart(chartId) {
+    console.log("mouseInPartOfChart "+chartId)
+    mouseInChart(chartId)
+  }
+
   function mouseMoveOutOfCharts(atDate) {
     if (isTimeFrozen) return;
-    //console.log("Mouse move out of the charts at Date"+atDate)
+    console.log("Mouse move out of the charts at Date"+atDate)
     if (categorySelected == 0) {
       UI.removeFrontCharts();
       UI.updateTitles(-1, -1)
@@ -363,6 +367,13 @@
 
   function mouseMoveInFrontChart(chartId, atDate) {
     if (isTimeFrozen) return;
+    console.log("mouseMoveInFrontChart "+chartId)
+    updateVerticalLineInUI(atDate.getTime())
+  }
+
+  function mouseMoveInPartOfChart(chartId, atDate) {
+    if (isTimeFrozen) return;
+    console.log("mouseMoveInPartOfChart "+chartId)
     updateVerticalLineInUI(atDate.getTime())
   }
 
@@ -381,9 +392,12 @@
   }
 
   function mouseClickedInPartOfChart(chartId) {
-    userSelectedCategory(chartId);
+    console.log("mouseClickedInPartOfChart "+chartId)
+    selectACategory(chartId+1)
+    //UI.removePartsOfChart()
+    /*userSelectedCategory(chartId);
     UI.hideFrameContainer();
-    UI.removeLines();
+    UI.removeLines();*/
   }
 
 
@@ -394,11 +408,16 @@
     mouseLeftTitle: mouseLeftTitle,
 
     mouseInChart: mouseInChart,
+    mouseInPartOfChart:mouseInPartOfChart,
+    mouseMoveInPartOfChart:mouseMoveInPartOfChart,
+
     mouseMoveInFrontChart: mouseMoveInFrontChart,
     mouseMoveOutOfCharts: mouseMoveOutOfCharts,
+
     mouseClickedInPartOfChart: mouseClickedInPartOfChart,
-    updateVerticalLineInUI:updateVerticalLineInUI,
     clickInFrontChart:clickInFrontChart,
+
+    updateVerticalLineInUI:updateVerticalLineInUI,
   };
 })();
 App.Plot1 = Plot1;

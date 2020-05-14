@@ -875,7 +875,7 @@ function renderCharts(charts, withStroke) {
           mouseDownCoordinates.y
         )
       ) {
-        App.Plot1.mouseClickedInPartOfChart(categorySelected.value);
+        App.Plot1.mouseClickedInPartOfChart(chart.id);
       }
     });
   });
@@ -909,6 +909,7 @@ function renderUpperLines(lines) {
 }
 
 function removePartsOfChart() {
+  console.log("*e")
   stackedArea.select(".chartFrames").remove();
   partOfChartContainer = null;
 }
@@ -990,14 +991,30 @@ function addPartsOfChart(
               mouseDownCoordinates.y
             )
           ) {
-            if (interleaving[0] == categorySelected.value) {
-              categorySelected.value = null;
-            } else {
-              categorySelected.value = interleaving[0];
-            }
-            App.Plot1.mouseClickedInPartOfChart(categorySelected.value);
+
+            App.Plot1.mouseClickedInPartOfChart(newIncompleteChart.id);
           }
+        })
+        .on("mouseenter", function (e) {
+            App.Plot1.mouseInPartOfChart(newIncompleteChart.id);
+        }).on("mousemove", function (e) {
+          let coordinateX = d3.mouse(this)[0];
+          let dateSelected = getXscale().invert(coordinateX);
+          App.Plot1.mouseMoveInPartOfChart(newIncompleteChart.id, dateSelected);
+          })
+
+        let domElement = document.getElementById("partOfChart_" + n + "_" + i);
+        domElement.addEventListener("mousemove", function (e) {
+          //mouse is moving in a part of a chart
+          //so the function moving outside a chart will not be called
+          e.stopPropagation();
+          App.YoutubePlayer.mouseIsMoving(e);
         });
+
+
+
+
+
       }
       startingBorder = endingBorder;
     });
