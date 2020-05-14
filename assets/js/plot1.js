@@ -24,6 +24,8 @@
     let displayedXInterval = null;
     let categorySelected = 0;
 
+    let isInterval = true
+
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = true;
     let isStreamChart = false;
@@ -63,6 +65,23 @@
         selectACategory(Number(char))
       }
     });
+
+    document.getElementById("toggle-on").addEventListener("change", () => {
+      isInterval = true;
+      App.Table.filterDateRange(displayedXInterval);
+      //helperPlot.filterDateRange(timeIntervalSelected);
+    });
+
+
+    document
+    .getElementById("toggle-off")
+    .addEventListener("change", () => (isInterval = false));
+
+    // HERE ADD UPDATE OF PLOTS
+    /*if (!isInterval) {
+      table.filterDateRange(dateToDisplay);
+      helperPlot.filterDateRange(dateToDisplay);
+    }*/
 
     //-------------------------------------------------INITIAL FLOW --------------------------------------------
 
@@ -184,6 +203,9 @@
       }else{
         categorySelected = id
       }
+      App.Table.filterCategory(id-1);
+      App.HelperPlot.filterCategory(value);
+
       if(seeChartInterleaving || !isStreamChart){
         changeDataOrder()
       }
@@ -292,9 +314,11 @@
 
   function userBrushed(b) {
     displayedXInterval = b;
-    console.log(b)
-    console.log(data.smallestDate)
-    console.log(data.biggestDate)
+    if (isInterval) {
+      App.HelperPlot.filterDateRange(b);
+      App.Table.filterDateRange(b);
+    }
+
     if(b[0].getTime() == data.smallestDate.getTime() && b[1].getTime() == data.biggestDate.getTime()){
       UI.setZoomOutButtonVisible(false)
     }else{
@@ -329,12 +353,12 @@
   //-------------------------------------------------METHOD CALLED FROM THE UI --------------------------------------------
 
   function mouseClickedInTitle(id){
-    console.log("mouseClickedInTitle " +id)
+    //console.log("mouseClickedInTitle " +id)
     selectACategory(id+1)
   }
 
   function clickInFrontChart(id){
-    console.log("clickInFrontChart " +id)
+    //console.log("clickInFrontChart " +id)
     selectACategory(id+1)
     if(categorySelected == 0){
       UI.removeFrontCharts()
@@ -342,7 +366,7 @@
   }
 
   function mouseOverTitle(id) {
-    console.log("Mouse over title " + data.categories[id])
+    //console.log("Mouse over title " + data.categories[id])
     if (categorySelected == 0) {
       updateVerticalLineInUI(null)
       UI.addFrontCharts(id, charts);
@@ -353,7 +377,7 @@
   }
 
   function mouseLeftTitle(id) {
-    console.log("Mouse left title " + data.categories[id])
+    //console.log("Mouse left title " + data.categories[id])
     if (categorySelected == 0) {
       UI.removeFrontCharts();
       UI.showFrameContainer();
@@ -363,7 +387,7 @@
   }
 
   function mouseInChart(chartId) {
-    console.log("Mouse went inside chart "+ chartId)
+    //console.log("Mouse went inside chart "+ chartId)
     if (isTimeFrozen) return;
     if (categorySelected == 0 && !seeChartInterleaving) {
       UI.addFrontCharts(chartId, charts);
@@ -375,13 +399,13 @@
   }
 
   function mouseInPartOfChart(chartId) {
-    console.log("mouseInPartOfChart "+chartId)
+    //console.log("mouseInPartOfChart "+chartId)
     mouseInChart(chartId)
   }
 
   function mouseMoveOutOfCharts(atDate) {
     if (isTimeFrozen) return;
-    console.log("Mouse move out of the charts at Date"+atDate)
+    //console.log("Mouse move out of the charts at Date"+atDate)
     if (categorySelected == 0) {
       UI.removeFrontCharts();
       UI.updateTitles(-1, -1)
@@ -391,13 +415,13 @@
 
   function mouseMoveInFrontChart(chartId, atDate) {
     if (isTimeFrozen) return;
-    console.log("mouseMoveInFrontChart "+chartId)
+    //console.log("mouseMoveInFrontChart "+chartId)
     updateVerticalLineInUI(atDate.getTime())
   }
 
   function mouseMoveInPartOfChart(chartId, atDate) {
     if (isTimeFrozen) return;
-    console.log("mouseMoveInPartOfChart "+chartId)
+    //console.log("mouseMoveInPartOfChart "+chartId)
     updateVerticalLineInUI(atDate.getTime())
   }
 
@@ -431,12 +455,8 @@
   }
 
   function mouseClickedInPartOfChart(chartId) {
-    console.log("mouseClickedInPartOfChart "+chartId)
+    //console.log("mouseClickedInPartOfChart "+chartId)
     selectACategory(chartId+1)
-    //UI.removePartsOfChart()
-    /*userSelectedCategory(chartId);
-    UI.hideFrameContainer();
-    UI.removeLines();*/
   }
 
 
