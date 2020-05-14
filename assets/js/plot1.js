@@ -32,6 +32,7 @@
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
     let streamGraphXbSpan = document.getElementById("streamGraphXbSpan");
     let streamGraphCheckBox = document.getElementById("streamGraphXb");
+    let zoomOutButton = document.getElementById("zoomOutButton");
 
     //the related event listeners
     interLeavingCheckBox.addEventListener("change", function (e) {
