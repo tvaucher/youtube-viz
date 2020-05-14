@@ -909,7 +909,6 @@ function renderUpperLines(lines) {
 }
 
 function removePartsOfChart() {
-  console.log("*e")
   stackedArea.select(".chartFrames").remove();
   partOfChartContainer = null;
 }
@@ -1141,7 +1140,6 @@ function addEventListenersInFrontChart(indexSelected,frontChartsPaths,charts) {
           categorySelected.value = id;
         }*/
         App.Plot1.clickInFrontChart(id);
-        //App.Plot1.mouseMoveInFrontChart(id, dateSelected);
       }
     });
 
