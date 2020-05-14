@@ -131,7 +131,7 @@
           App.YoutubePlayer.makeAppearYoutubePlayerBox(songId);
         });
         d.addEventListener("mousemove", function (e) {
-          let uploadTS = d.getAttribute("data-upload-timestamp");
+          let uploadTS = +d.getAttribute("data-upload-timestamp");
           App.Plot1.updateVerticalLineInUI(uploadTS);
         });
       });
