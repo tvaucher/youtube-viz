@@ -1015,13 +1015,13 @@ function addPartsOfChart(
           App.Plot1.mouseMoveInPartOfChart(newIncompleteChart.id, dateSelected);
           })
 
-        let domElement = document.getElementById("partOfChart_" + n + "_" + i);
+        /*let domElement = document.getElementById("partOfChart_" + n + "_" + i);
         domElement.addEventListener("mousemove", function (e) {
           //mouse is moving in a part of a chart
           //so the function moving outside a chart will not be called
-          e.stopPropagation();
-          App.YoutubePlayer.mouseIsMoving(e);
-        });
+          //e.stopPropagation();
+          //App.YoutubePlayer.mouseIsMoving(e);
+        });*/
 
 
 

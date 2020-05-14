@@ -25,7 +25,7 @@
     let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = false;
+    let seeChartInterleaving = true;
     let isStreamChart = false;
 
     //the user controls
