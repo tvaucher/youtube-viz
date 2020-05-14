@@ -6,6 +6,7 @@
   cursor: grab;
   border: 1px solid black;
   user-select: none;
+  z-index: 1;
 }
 
 #youtubePlayerBox.grabbed{
