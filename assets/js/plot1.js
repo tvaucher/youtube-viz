@@ -87,6 +87,7 @@
 
     function addElementsToStackedArea(data) {
       if(seeChartInterleaving || !isStreamChart){
+        changeDataOrder()
         displayedOrder = dataOrder
       }
       //initiate the charts
@@ -179,7 +180,9 @@
       }else{
         categorySelected = id
       }
-      changeDataOrder()
+      if(seeChartInterleaving || !isStreamChart){
+        changeDataOrder()
+      }
       adaptYScale()
 
       UI.removeVerticalLines()
