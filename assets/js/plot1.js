@@ -24,11 +24,11 @@
     let displayedXInterval = null;
     let categorySelected = 0;
 
-    let isInterval = true
+    let videoTableIntervalDisplay = true
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = true;
-    let isStreamChart = false;
+    let seeChartInterleaving = false;
+    let isStreamChart = true;
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
@@ -67,18 +67,18 @@
     });
 
     document.getElementById("toggle-on").addEventListener("change", () => {
-      isInterval = true;
+      videoTableIntervalDisplay = true;
       App.Table.filterDateRange(displayedXInterval);
-      //helperPlot.filterDateRange(timeIntervalSelected);
+      App.HelperPlot.filterDateRange(displayedXInterval);
     });
 
 
     document
     .getElementById("toggle-off")
-    .addEventListener("change", () => (isInterval = false));
+    .addEventListener("change", () => (videoTableIntervalDisplay = false));
 
     // HERE ADD UPDATE OF PLOTS
-    /*if (!isInterval) {
+    /*if (!videoTableIntervalDisplay) {
       table.filterDateRange(dateToDisplay);
       helperPlot.filterDateRange(dateToDisplay);
     }*/
@@ -204,7 +204,7 @@
         categorySelected = id
       }
       App.Table.filterCategory(id-1);
-      App.HelperPlot.filterCategory(value);
+      App.HelperPlot.filterCategory(id-1);
 
       if(seeChartInterleaving || !isStreamChart){
         changeDataOrder()
@@ -314,7 +314,7 @@
 
   function userBrushed(b) {
     displayedXInterval = b;
-    if (isInterval) {
+    if (videoTableIntervalDisplay) {
       App.HelperPlot.filterDateRange(b);
       App.Table.filterDateRange(b);
     }
@@ -411,18 +411,27 @@
       UI.updateTitles(-1, -1)
     }
     updateVerticalLineInUI(atDate.getTime())
+    testIfRedrawTable(atDate)
   }
 
   function mouseMoveInFrontChart(chartId, atDate) {
     if (isTimeFrozen) return;
     //console.log("mouseMoveInFrontChart "+chartId)
     updateVerticalLineInUI(atDate.getTime())
+    testIfRedrawTable(atDate)
   }
 
   function mouseMoveInPartOfChart(chartId, atDate) {
     if (isTimeFrozen) return;
     //console.log("mouseMoveInPartOfChart "+chartId)
     updateVerticalLineInUI(atDate.getTime())
+    testIfRedrawTable(atDate)
+  }
+
+  function testIfRedrawTable(atDate){
+    if (!videoTableIntervalDisplay){
+      console.log("Tim please do your magic here, sync the table for the good date" + atDate)
+    }
   }
 
   function updateVerticalLineInUI(timestamp){
