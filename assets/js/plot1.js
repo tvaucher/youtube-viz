@@ -32,7 +32,7 @@
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
     let streamGraphXbSpan = document.getElementById("streamGraphXbSpan");
     let streamGraphCheckBox = document.getElementById("streamGraphXb");
-    let zoomOutButton = document.getElementById("zoomOutButton");
+
 
     //the related event listeners
     interLeavingCheckBox.addEventListener("change", function (e) {
@@ -42,6 +42,8 @@
     streamGraphCheckBox.addEventListener("change", function (e) {
       setStreamGraphValue(e.target.checked);
     });
+
+
 
     //the keyboard shortcuts for theses functions
     document.addEventListener("keypress", function (e) {
@@ -84,6 +86,7 @@
 
       setChartInterleavingValue(seeChartInterleaving)
       setStreamGraphValue(isStreamChart)
+      UI.setZoomOutButtonVisible(false)
     });
 
     function addElementsToStackedArea(data) {
@@ -289,6 +292,14 @@
 
   function userBrushed(b) {
     displayedXInterval = b;
+    console.log(b)
+    console.log(data.smallestDate)
+    console.log(data.biggestDate)
+    if(b[0].getTime() == data.smallestDate.getTime() && b[1].getTime() == data.biggestDate.getTime()){
+      UI.setZoomOutButtonVisible(false)
+    }else{
+      UI.setZoomOutButtonVisible(true)
+    }
     adaptYScale();
 
     for (var i = 0; i < charts.length; i++) {

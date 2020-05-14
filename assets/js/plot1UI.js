@@ -36,7 +36,7 @@
     let svg = null;
     let stackedArea = null;
     let stackedAreaBorderLines = null;
-    let timeIntervalSelected = new Proxy(
+    let timeIntervalSelected = null /*new Proxy(
       { value: null },
       {
         set: (target, key, value) => {
@@ -48,7 +48,7 @@
           return true;
         },
       }
-    );
+    );*/
     let chartsContainer = null;
     let frontChartsPaths = null;
     let lastIndexHighlighted = null;
@@ -68,19 +68,18 @@ let sliderBox = null;
 let bbrush = null;
 let brushXScale = null;
 let toCallForBrush = null;
+let zoomOutButton = d3.select("#zoomOutButton")
 
 // For the other plots
 let isTimeFrozen = false;
 let isInterval = true;
 
-document.getElementById("resetInterval").addEventListener("click", () => {
-  timeIntervalSelected.value = null;
-  positionBrush(null, null);
-});
+
+
 document.getElementById("toggle-on").addEventListener("change", () => {
   isInterval = true;
-  table.filterDateRange(timeIntervalSelected.value);
-  helperPlot.filterDateRange(timeIntervalSelected.value);
+  table.filterDateRange(timeIntervalSelected);
+  helperPlot.filterDateRange(timeIntervalSelected);
 });
 document
 .getElementById("toggle-off")
@@ -92,6 +91,18 @@ document.addEventListener("keypress", function (e) {
     isTimeFrozen = !isTimeFrozen;
   }
 });
+
+
+zoomOutButton.on("click", function (e) {
+  timeIntervalSelected = [smallestDate, biggestDate];
+  onBrush()
+  positionBrush(null, null);
+})
+/*.on("mousemove", function (e) {
+  let coordinateX = d3.mouse(this)[0];
+  let dateSelected = getXscale().invert(coordinateX);
+  App.Plot1.updateVerticalLineInUI(dateSelected.getTime())
+});*/
 
 //the revelant data needed
 let smallestDate = null;
@@ -107,7 +118,7 @@ function setData(args) {
   maxYscore = args.maxYscore;
   onBrush = function () {
     drawXAxis();
-    args.onBrush(timeIntervalSelected.value);
+    args.onBrush(timeIntervalSelected);
   };
 }
 
@@ -165,15 +176,15 @@ function removeSelectionRect(toDate, clientX) {
     let redWarning =
     cleanedInterval[0] != originalInterval[0] ||
     cleanedInterval[1] != originalInterval[1];
-    timeIntervalSelected.value = redWarning
+    timeIntervalSelected = redWarning
     ? [smallestDate, biggestDate]
     : cleanedInterval;
     if (redWarning) {
       positionBrush(null, null);
     } else {
       positionBrush(
-        timeIntervalSelected.value[0],
-        timeIntervalSelected.value[1]
+        timeIntervalSelected[0],
+        timeIntervalSelected[1]
       );
     }
   }
@@ -239,6 +250,8 @@ function drawSelectionRect(fromDate, toDate, clientX) {
 function prepareSVGElement() {
   //delete the previous svg element
   d3.select("#plot1_container").select("svg").remove();
+
+
 
   //create a new svg element
   svg = d3
@@ -413,7 +426,7 @@ function createTitles() {
 
 /*Create the slider box with the brush*/
 function createSlider() {
-  timeIntervalSelected.value = [smallestDate, biggestDate];
+  timeIntervalSelected = [smallestDate, biggestDate];
 
   let sliderWidth = stackedAreaMarginWidth;
   let niceAxis = sliderBoxPreferences.displayNiceAxis;
@@ -523,7 +536,7 @@ function createSlider() {
   .select(".xbrush")
   .select(".overlay")
   .on("mousedown", function () {
-    timeIntervalSelected.value = [smallestDate, biggestDate];
+    timeIntervalSelected = [smallestDate, biggestDate];
     console.log("clicked inside the brush");
     onBrush();
   });
@@ -541,7 +554,7 @@ function createSlider() {
 
     //first we make sure that we cannot zoom too much
     b = getCleanedInterval(b);
-    timeIntervalSelected.value = b;
+    timeIntervalSelected = b;
     onBrush();
   }
 } //end of createSlider
@@ -770,7 +783,7 @@ function getXscale() {
   return d3
   .scaleTime()
   .range([0, stackedAreaMarginWidth])
-  .domain(timeIntervalSelected.value);
+  .domain(timeIntervalSelected);
 }
 
 function getYscale() {
@@ -1188,8 +1201,8 @@ function addVerticalLines(timestamps, color, dateToDisplay) {
     return;
   }
   let goodTimeStamp = Math.min(
-    timeIntervalSelected.value[1].getTime(),
-    Math.max(timeIntervalSelected.value[0].getTime(), timestamps[0])
+    timeIntervalSelected[1].getTime(),
+    Math.max(timeIntervalSelected[0].getTime(), timestamps[0])
   );
   addDate(goodTimeStamp, dateToDisplay, color);
   let linesContainer = stackedArea
@@ -1240,6 +1253,10 @@ function colorForFadingIndex(index) {
   return colors[index % colors.length];
 }
 
+function setZoomOutButtonVisible(newValue){
+  document.getElementById("zoomOutButton").style.visibility = newValue ? "visible" : "hidden"
+}
+
 return {
   setData: setData,
   prepareElements: function () {
@@ -1269,6 +1286,7 @@ return {
   colorForFadingIndex: colorForFadingIndex,
   showFrameContainer: showFrameContainer,
   hideFrameContainer: hideFrameContainer,
+  setZoomOutButtonVisible:setZoomOutButtonVisible,
 };
 })();
 App.Plot1UI = Plot1UI;
