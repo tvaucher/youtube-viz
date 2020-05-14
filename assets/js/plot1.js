@@ -214,8 +214,11 @@
         changeDataOrder();
       }
       adaptYScale();
-
-      UI.removeVerticalLines();
+      let color =
+        categorySelected == 0
+          ? "#B1B1B1"
+          : UI.colorForIndex(categorySelected - 1);
+      UI.updateColor(color);
       addElementsToStackedArea(data);
 
       if (categorySelected == 0) {
@@ -340,7 +343,7 @@
     function mouseOverTitle(id) {
       //console.log("Mouse over title " + data.categories[id])
       if (categorySelected == 0) {
-        updateVerticalLineInUI(null);
+        if (!isTimeFrozen) updateVerticalLineInUI(null);
         UI.addFrontCharts(id, charts);
         UI.hideFrameContainer();
         UI.removeLines();

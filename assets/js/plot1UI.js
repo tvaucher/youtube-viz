@@ -1183,6 +1183,11 @@ function addVerticalLines(timestamps, color, dateToDisplay) {
   .attr("stroke", color);
 }
 
+function updateColor(color) {
+  stackedArea.select(".verticalLines").attr("stroke", color)
+  svg.select("#currentDateDisplayed").attr("fill", color)
+}
+
 function colorForIndex(index) {
   var colors = [
     "#0DEDBA  ",
@@ -1237,6 +1242,7 @@ return {
   updateTitles: updateTitles,
   addVerticalLines: addVerticalLines,
   removeVerticalLines:removeVerticalLines,
+  updateColor: updateColor,
   colorForIndex: colorForIndex,
   colorForFadingIndex: colorForFadingIndex,
   showFrameContainer: showFrameContainer,
