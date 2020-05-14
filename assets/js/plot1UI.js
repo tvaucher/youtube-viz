@@ -153,7 +153,6 @@
         );
       }
     }
-    //console.log("SHOULD ZOOM "+shouldZoom)
   }
   function drawSelectionRect(fromDate, toDate, clientX) {
     removeVerticalLines();
@@ -226,7 +225,6 @@
     .attr("height", svgHeight);
 
     svg.on("mouseup", function (e) {
-      //console.log("mouse up")
       let coordinateX = d3.mouse(this)[0];
       let dateSelected = getXscale().invert(
         coordinateX - stackedAreaMargin.left
@@ -235,7 +233,6 @@
     });
 
     svg.on("mousedown", function (e) {
-      //console.log("mouse down")
       let coordinateX = d3.mouse(this)[0];
       let fromDate = getXscale().invert(coordinateX - stackedAreaMargin.left);
       if (fromDate < smallestDate) {
@@ -502,7 +499,6 @@
     .select(".overlay")
     .on("mousedown", function () {
       timeIntervalSelected = [smallestDate, biggestDate];
-      console.log("clicked inside the brush");
       onBrush();
     });
 

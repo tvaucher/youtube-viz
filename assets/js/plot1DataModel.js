@@ -402,41 +402,11 @@
       };
     }
 
-    function getClosestIndex(forDate, data) {
-      if (forDate < data.values[0].date) {
-        return 0;
-      } else if (forDate > data.values[data.values.length - 1].date) {
-        return data.values.length - 1;
-      }
-
-      let start = 0;
-      let end = data.values.length - 1;
-      while (start <= end) {
-        let mid = Math.floor((start + end) / 2);
-
-        if (data.values[mid].date < forDate) start = mid + 1;
-        else end = mid - 1;
-      }
-
-      if (end < 0) return 0;
-      let leftDate = data.values[end].date;
-      let rightDate = data.values[start].date;
-
-      let intervalBetweenCurentAndPrevious =
-        forDate.getTime() - leftDate.getTime();
-      let intervalBetweenCurentAndNext =
-        rightDate.getTime() - forDate.getTime();
-      return intervalBetweenCurentAndPrevious < intervalBetweenCurentAndNext
-        ? end
-        : start;
-    }
-
     return {
       prepareData: prepareData,
       computeTimeStampsBreaks: computeTimeStampsBreaks,
       computeChartInterLeaving: computeChartInterLeaving,
       getMaxValuesBetween: getMaxValuesBetween,
-      getClosestIndex: getClosestIndex,
       pixelStepWidth: pixelStepWidth2,
     };
   })();
