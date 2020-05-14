@@ -1186,6 +1186,9 @@ function addDate(timestamp, date, color) {
 
 function addVerticalLines(timestamps, color, dateToDisplay) {
   removeVerticalLines();
+  if(timestamps.length == 0){
+    return;
+  }
   let goodTimeStamp = Math.min(
     timeIntervalSelected.value[1].getTime(),
     Math.max(timeIntervalSelected.value[0].getTime(), timestamps[0])

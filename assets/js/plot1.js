@@ -332,6 +332,7 @@
   function mouseOverTitle(id) {
     console.log("Mouse over title " + data.categories[id])
     if (categorySelected == 0) {
+      updateVerticalLineInUI(null)
       UI.addFrontCharts(id, charts);
       UI.hideFrameContainer();
       UI.removeLines();
@@ -394,8 +395,9 @@
     ? "#B1B1B1"
     : UI.colorForIndex(categorySelected-1);
     let closestIndex = model.getClosestIndex(new Date(timestamp), data);
+    let ts = timestamp == null ? [] : [timestamp]
     UI.addVerticalLines(
-      [timestamp],
+      ts,
       color,
       data.values[closestIndex].date
     );
