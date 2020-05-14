@@ -203,8 +203,12 @@
       } else {
         categorySelected = id;
       }
-      App.Table.filterCategory(categorySelected === 0 ? null : categorySelected - 1);
-      App.HelperPlot.filterCategory(categorySelected === 0 ? null : categorySelected - 1);
+      App.Table.filterCategory(
+        categorySelected === 0 ? null : categorySelected - 1
+      );
+      App.HelperPlot.filterCategory(
+        categorySelected === 0 ? null : categorySelected - 1
+      );
 
       if (seeChartInterleaving || !isStreamChart) {
         changeDataOrder();
@@ -398,10 +402,9 @@
 
     function testIfRedrawTable(atDate) {
       if (!videoTableIntervalDisplay) {
-        console.log(
-          "Tim please do your magic here, sync the table for the good date" +
-            atDate
-        );
+        let current_date = dateFns.startOfWeek(atDate, { weekStartsOn: 1 });
+        App.Table.filterDateRange(current_date);
+        App.HelperPlot.filterDateRange(current_date);
       }
     }
 
@@ -410,9 +413,12 @@
         categorySelected == 0
           ? "#B1B1B1"
           : UI.colorForIndex(categorySelected - 1);
-      let closestIndex = model.getClosestIndex(new Date(timestamp), data);
       let ts = timestamp == null ? [] : [timestamp];
-      UI.addVerticalLines(ts, color, data.values[closestIndex].date);
+      UI.addVerticalLines(
+        ts,
+        color,
+        dateFns.startOfWeek(new Date(timestamp), { weekStartsOn: 1 })
+      );
     }
 
     function changeDataOrder() {
