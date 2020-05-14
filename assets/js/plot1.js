@@ -24,7 +24,7 @@
     let categorySelected = 0;
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
-    let seeChartInterleaving = true;
+    let seeChartInterleaving = false;
     let isStreamChart = false;
 
     //the user controls
@@ -145,9 +145,13 @@
       } else {
         streamGraphXbSpan.style.display = "inline"
       }
-
       adaptYScale();
       addElementsToStackedArea(data);
+      if(categorySelected != 0){
+        let cat = categorySelected
+        categorySelected = 0
+        selectACategory(cat)
+      }
     }
 
     function setStreamGraphValue(value){
@@ -158,9 +162,9 @@
         //visible changes
         addElementsToStackedArea(data);
         if(categorySelected != 0){
+          adaptYScale()
           UI.addFrontCharts(categorySelected-1, charts);
           UI.updateTitles(-1,categorySelected-1)
-          adaptYScale()
         }
       }
     }
@@ -217,7 +221,7 @@
 
   function adaptYScale() {
     let scaleToUse = categorySelected
-    if (isStreamChart && !seeChartInterleaving) {
+    if ((isStreamChart && !seeChartInterleaving)||seeChartInterleaving) {
       scaleToUse = 0;
     }
 
@@ -296,7 +300,7 @@
           heavyCompute();
           UI.renderUpperLines(upperLines);
         }else {
-          UI.addFrontCharts(categorySelected, charts);
+          UI.addFrontCharts(categorySelected-1, charts);
         }
       }, 250);
     }
