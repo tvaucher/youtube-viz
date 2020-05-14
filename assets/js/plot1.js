@@ -13,6 +13,7 @@
     let data = null;
     //the order in the one to draw the data
     let dataOrder = [];
+    let displayedOrder = [];
 
     /*The graphicals elements in the chartArea*/
     let charts = [];
@@ -68,7 +69,7 @@
       for (let i = 0; i < data.categories.length ; i++){
         dataOrder.push(i)
       }
-      dataOrder = [4,3,2,1,5,6,0]
+      displayedOrder = dataOrder
       displayedXInterval = [data.smallestDate, data.biggestDate]
 
       UI.setData({
@@ -85,13 +86,16 @@
     });
 
     function addElementsToStackedArea(data) {
+      if(seeChartInterleaving || !isStreamChart){
+        displayedOrder = dataOrder
+      }
       //initiate the charts
       charts = [];
       for (let i = 0; i < data.categories.length; i++) {
         charts.push(
           UI.createChart({
             data: data,
-            dataOrder:dataOrder,
+            dataOrder:displayedOrder,
             id: i,
             stacksSupperpose: !seeChartInterleaving,
             streamChartWhenSupperPosed: isStreamChart,
@@ -106,7 +110,7 @@
           upperLines.push(
             UI.createUpperLine({
               data: data,
-              dataOrder:dataOrder,
+              dataOrder:displayedOrder,
               id: i,
               stacksSupperpose: !seeChartInterleaving,
             })
@@ -175,6 +179,7 @@
       }else{
         categorySelected = id
       }
+      changeDataOrder()
       adaptYScale()
 
       UI.removeVerticalLines()
@@ -349,7 +354,6 @@
     }
 
     if (categorySelected == 0){
-      console.log(chartId)
       UI.updateTitles(chartId, -1)
     }
   }
@@ -393,6 +397,20 @@
       data.values[closestIndex].date
     );
 
+  }
+
+  function changeDataOrder(){
+    if(categorySelected == 0){
+      return
+    }
+    let newOrder = [categorySelected-1]
+    dataOrder.forEach(o=>{
+      if(o != categorySelected-1){
+        newOrder.push(o)
+      }
+    })
+    dataOrder = newOrder
+    console.log(dataOrder)
   }
 
   function mouseClickedInPartOfChart(chartId) {
