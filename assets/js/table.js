@@ -26,7 +26,7 @@
     let dateDimension = null;
     let categoryDimension = null;
     let viewCountDimension = null;
-    let showTable = false;
+    let showTable = true;
     document.getElementById("showTable").addEventListener("click", () => {
       showTable = !showTable;
       if (showTable) {
@@ -71,8 +71,8 @@
       viewCountDimension = topVideos.dimension((d) => d.view_count);
 
       initTable();
-      //
       bestVideosTable.render();
+      d3.select("#tableLoader").remove();
       initEmbedVid();
     });
 
