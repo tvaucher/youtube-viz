@@ -28,7 +28,7 @@
   width: 50%;
   height:50%;
   transform: translate(-50%, -50%);
-  transition-property: left top;
+  transition-property: left top transform;
   transition-duration: 0.5s;
   transition-timing-function: cubic-bezier();
 }
