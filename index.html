@@ -11,33 +11,60 @@ has_viz: true
   </p>
 </div>
 <div class="plot1">
-  <img src="{{ site.baseurl }}/assets/img/settingButton.png" alt="zoom out button" id = "settingButton">
-  <img src="{{ site.baseurl }}/assets/img/zoomOut.png" alt="zoom out button" id = "zoomOutButton">
+  <img src="{{ site.baseurl }}/assets/img/settingButton.png" alt="zoom out button" id="settingButton">
+  <img src="{{ site.baseurl }}/assets/img/zoomOut.png" alt="zoom out button" id="zoomOutButton">
   <div id="plot1_title_container">
   </div>
 
   <div id="plot1CheckBoxes">
+<<<<<<< HEAD
     <span><input type="radio" name="plotKind" value="chartInterLeavingInput" id="chartInterLeavingInput" /> <label for="chartInterLeavingInput">Interleaving Chart</label></span>
     <span><input type="radio" name="plotKind" value="streamChartInput" id="streamChartInput" /> <label for="streamChartInput">Stream Chart</label></span>
     <span><input type="radio" name="plotKind" value="stackedAreaInput" id="stackedAreaInput" checked/> <label for="stackedAreaInput">Stacked Area</label></span>
+=======
+    <span><input type="radio" name="plotKind" value="chartInterLeavingInput" id="chartInterLeavingInput" /> <label
+        for="chartInterLeavingInput">See Interleaving Chart</label></span>
+    <span><input type="radio" name="plotKind" value="streamChartInput" id="streamChartInput" /> <label
+        for="streamChartInput">See Graph as Stream Chart</label></span>
+    <span><input type="radio" name="plotKind" value="stackedAreaInput" id="stackedAreaInput" checked /> <label
+        for="stackedAreaInput">See Graph as Stacked Area</label></span>
+>>>>>>> e570b5bc2ffb35a6dd506136cf0c46d24418d551
   </div>
   <div id="plot1_container">
   </div>
 
   <div id="helper_container">
-    <button type="button" id="showTable" class="collapsible">Show top videos table</button>
+    <div id="table_container" class="collapsible-content" style="display: block;">
+      <div id="tableTitle">Top 50 all categories videos for all time</div>
+      <table id="dcTable">
+        <div class="lds-default" id="tableLoader">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </table>
+    </div>
+    <button type="button" id="showTable" class="collapsible">Hide top videos table</button>
     <input id="toggle-on" class="toggle toggle-left" name="toggle" value="false" type="radio" checked>
     <label for="toggle-on" class="btn">Time Interval</label>
     <input id="toggle-off" class="toggle toggle-right" name="toggle" value="true" type="radio">
     <label for="toggle-off" class="btn">Weekly</label>
-    <div id="table_container" class="collapsible-content">
-      <div id="tableTitle">Top 50 all categories videos for all time</div>
-      <table id="dcTable"></table>
-    </div>
     <div id="plot2_container">
       <div id="duration_plot">
         <div id="durationTitle">Duration distribution of all categories videos for all time</div>
       </div>
+      <!--<div id="hist_plot">
+        <div id="histTitle">Check this later</div>
+      </div>-->
     </div>
   </div>
 </div>
@@ -90,8 +117,10 @@ has_viz: true
       var content = document.getElementById("table_container");
       if (content.style.display === "block") {
         content.style.display = "none";
+        this.textContent = "Show top videos table";
       } else {
         content.style.display = "block";
+        this.textContent = "Hide top videos table";
       }
     });
   }
