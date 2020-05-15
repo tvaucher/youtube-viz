@@ -28,11 +28,6 @@ has_viz: true
   </div>
 
   <div id="helper_container">
-    <button type="button" id="showTable" class="collapsible">Hide top videos table</button>
-    <input id="toggle-on" class="toggle toggle-left" name="toggle" value="false" type="radio" checked>
-    <label for="toggle-on" class="btn">Time Interval</label>
-    <input id="toggle-off" class="toggle toggle-right" name="toggle" value="true" type="radio">
-    <label for="toggle-off" class="btn">Weekly</label>
     <div id="table_container" class="collapsible-content" style="display: block;">
       <div id="tableTitle">Top 50 all categories videos for all time</div>
       <table id="dcTable">
@@ -52,10 +47,18 @@ has_viz: true
         </div>
       </table>
     </div>
+    <button type="button" id="showTable" class="collapsible">Hide top videos table</button>
+    <input id="toggle-on" class="toggle toggle-left" name="toggle" value="false" type="radio" checked>
+    <label for="toggle-on" class="btn">Time Interval</label>
+    <input id="toggle-off" class="toggle toggle-right" name="toggle" value="true" type="radio">
+    <label for="toggle-off" class="btn">Weekly</label>
     <div id="plot2_container">
       <div id="duration_plot">
         <div id="durationTitle">Duration distribution of all categories videos for all time</div>
       </div>
+      <!--<div id="hist_plot">
+        <div id="histTitle">Check this later</div>
+      </div>-->
     </div>
   </div>
 </div>
