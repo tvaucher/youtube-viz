@@ -10,8 +10,6 @@
   min-width: 800px;
 }
 
-
-
 @media (min-width: 56em) {
   .container {
     max-width: 72rem;
@@ -141,13 +139,18 @@ svg text::selection {
   fill: none;
 }
 
-.sliderBox .xbrush rect.selection,
-.sliderBox .xbrush .handle {
+.sliderBox .xbrush rect.selection{
   /*stroke:red;*/
   /*visibility: hidden;*/
   height: 10px;
-  transform: translate(0px, 25px);
-  stroke: yellow;
+  transform: translate(0px, 5px);
+
+}
+.sliderBox .xbrush .handle {
+  height: 10px;
+  transform: translate(0px, 8px);
+  fill: #b1b1b1;
+  stroke: white;
 }
 
 .upperLinesContainer path {

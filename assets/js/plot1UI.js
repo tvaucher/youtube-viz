@@ -19,11 +19,11 @@
       top: 15,
       left: 70,
       right: 40,
-      height: 350,
+      height: 300,
     };
 
     const sliderBoxPreferences = {
-      height: 60,
+      height: 20,
       tickHeight: 5,
       displayNiceAxis: false,
     };
@@ -406,18 +406,11 @@
       "translate(" +
       stackedAreaMargin.left +
       "," +
-      (svgHeight - sliderBoxPreferences.height) +
+      (stackedAreaMargin.top + stackedAreaMargin.height + 20) +
       ")"
     );
 
-    //drawing the separation line
-    sliderBox
-    .append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", svgWidth)
-    .attr("y2", 0)
-    .attr("class", "topLine");
+
     // Create a domain
     brushXScale = d3
     .scaleTime()
