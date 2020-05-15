@@ -26,9 +26,12 @@
 
     let videoTableIntervalDisplay = true;
 
+
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = false;
     let isStreamChart = true;
+
+    let settingVisible = false
 
     //the user controls
     let interLeavingCheckBox = document.getElementById("interLeavingXb");
@@ -74,14 +77,15 @@
     });
 
     document
-      .getElementById("toggle-off")
-      .addEventListener("change", () => (videoTableIntervalDisplay = false));
+    .getElementById("toggle-off")
+    .addEventListener("change", () => (videoTableIntervalDisplay = false));
 
-    // HERE ADD UPDATE OF PLOTS
-    /*if (!videoTableIntervalDisplay) {
-      table.filterDateRange(dateToDisplay);
-      helperPlot.filterDateRange(dateToDisplay);
-    }*/
+    document.getElementById("settingButton").addEventListener("click", function(){
+      settingVisible = !settingVisible
+      document.getElementById("plot1CheckBoxes").style.display = settingVisible ? "flex" : "none"
+    });
+
+
 
     //-------------------------------------------------INITIAL FLOW --------------------------------------------
 
@@ -97,8 +101,8 @@
       UI.setData({
         data: data,
         maxYscore: seeChartInterleaving
-          ? data.maxSingleScore
-          : data.maxScoreAtTimeStamp,
+        ? data.maxSingleScore
+        : data.maxScoreAtTimeStamp,
         onBrush: userBrushed,
       });
 
@@ -108,13 +112,16 @@
       setChartInterleavingValue(seeChartInterleaving);
       setStreamGraphValue(isStreamChart);
       UI.setZoomOutButtonVisible(false);
+
+      window.addEventListener("resize", onResize)
     });
 
-    function addElementsToStackedArea(data) {
+    function addElementsToStackedArea() {
       if (seeChartInterleaving || !isStreamChart) {
         changeDataOrder();
         displayedOrder = dataOrder;
       }
+
       //initiate the charts
       charts = [];
       for (let i = 0; i < data.categories.length; i++) {
@@ -161,7 +168,17 @@
       } else {
         UI.renderCharts(charts, true);
       }
+
+
     } //end of create plot function
+
+    function onResize(){
+      console.log(data)
+      UI.prepareElements()
+      addElementsToStackedArea()
+      setChartInterleavingValue(seeChartInterleaving);
+      setStreamGraphValue(isStreamChart);
+    }
 
     //-------------------------------------------------PLOT CHANGES --------------------------------------------
 
@@ -215,9 +232,9 @@
       }
       adaptYScale();
       let color =
-        categorySelected == 0
-          ? "#B1B1B1"
-          : UI.colorForIndex(categorySelected - 1);
+      categorySelected == 0
+      ? "#B1B1B1"
+      : UI.colorForIndex(categorySelected - 1);
       UI.updateColor(color);
       addElementsToStackedArea(data);
 
@@ -251,8 +268,8 @@
       );
 
       var maxBound = !seeChartInterleaving
-        ? bounds.maxScoreAtTimeStamp
-        : bounds.maxSingleScore;
+      ? bounds.maxScoreAtTimeStamp
+      : bounds.maxSingleScore;
       UI.setData({
         data: data,
         maxYscore: maxBound,
@@ -413,9 +430,9 @@
 
     function updateVerticalLineInUI(timestamp) {
       let color =
-        categorySelected == 0
-          ? "#B1B1B1"
-          : UI.colorForIndex(categorySelected - 1);
+      categorySelected == 0
+      ? "#B1B1B1"
+      : UI.colorForIndex(categorySelected - 1);
       let ts = timestamp == null ? [] : [timestamp];
       UI.addVerticalLines(
         ts,

@@ -7,6 +7,7 @@
   user-select: none;
   position: relative;
   z-index: 1;
+  min-width: 800px;
 }
 
 
@@ -38,10 +39,18 @@
   height: 450px;
 }
 
+#settingButton{
+  position: absolute;
+  left: 70px;
+  top:30px;
+  height: 30px;
+  width: 30px;
+  /*pointer-events: none;*/
+}
 #zoomOutButton{
   position: absolute;
   right: 40px;
-  top:40px;
+  top:30px;
   height: 30px;
   width: 32px;
   visibility: hidden;
@@ -49,8 +58,17 @@
 
 }
 
-.plotCheckBoxes {
-  padding: 0 0 20px 0;
+#plot1CheckBoxes {
+  margin-left: 100px;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: none;
+}
+.plot1CheckBoxes * {
+  border: 1px solid red;
 }
 
 #yAxisSelectorWrapper {

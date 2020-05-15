@@ -5,7 +5,7 @@
     const containerName = "plot1_container";
     const titleContainerId = "plot1_title_container";
     let titles = null;
-    const svgWidth = document.getElementById(containerName).clientWidth;
+    let svgWidth = document.getElementById(containerName).clientWidth;
     const svgHeight = document.getElementById(containerName).clientHeight;
 
     //-------------SOME UI PARAMTER TO TUNE-------------
@@ -28,7 +28,7 @@
       displayNiceAxis: false,
     };
 
-    const stackedAreaMarginWidth =
+    let stackedAreaMarginWidth =
     svgWidth - stackedAreaMargin.right - stackedAreaMargin.left;
     //------------------------------------------------
     let svg = null;
@@ -212,6 +212,8 @@
   }
 
   function prepareSVGElement() {
+    svgWidth = document.getElementById(containerName).clientWidth;
+    stackedAreaMarginWidth = svgWidth - stackedAreaMargin.right - stackedAreaMargin.left;
     //delete the previous svg element
     d3.select("#plot1_container").select("svg").remove();
 
