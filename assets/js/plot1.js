@@ -470,7 +470,6 @@
         }
       });
       dataOrder = newOrder;
-      console.log(dataOrder);
     }
 
     function mouseClickedInPartOfChart(chartId) {
