@@ -29,23 +29,38 @@
 
     //----------------------------------------SOME DISPLAYED PREFERENCES ABOUT THE GRAPH -------------------------------------------
     let seeChartInterleaving = false;
-    let isStreamChart = true;
+    let isStreamChart = false;
 
     let settingVisible = false
 
     //the user controls
-    let interLeavingCheckBox = document.getElementById("interLeavingXb");
-    let streamGraphXbSpan = document.getElementById("streamGraphXbSpan");
-    let streamGraphCheckBox = document.getElementById("streamGraphXb");
 
-    //the related event listeners
-    interLeavingCheckBox.addEventListener("change", function (e) {
-      setChartInterleavingValue(e.target.checked);
-    });
+    var aboElts = document.getElementsByName("plotKind");
+    for(var i=0; i<aboElts.length; i++){
+      aboElts[i].addEventListener("change", function(e){
 
-    streamGraphCheckBox.addEventListener("change", function (e) {
-      setStreamGraphValue(e.target.checked);
-    });
+        switch(e.target.value){
+          case "chartInterLeavingInput":
+          seeChartInterleaving = true
+          setChartInterleavingValue(true)
+          break;
+          case "stackedAreaInput":
+          seeChartInterleaving = false
+          setChartInterleavingValue(false)
+          isStreamChart = false
+          setStreamGraphValue(false)
+          break;
+          case "streamChartInput":
+          case "stackedAreaInput":
+          seeChartInterleaving = false
+          setChartInterleavingValue(false)
+          isStreamChart = true
+          setStreamGraphValue(true)
+          break;
+        }
+      });
+    }
+
 
     //the keyboard shortcuts for theses functions
     document.addEventListener("keypress", function (e) {
@@ -109,8 +124,18 @@
       UI.prepareElements();
       addElementsToStackedArea(data);
 
-      setChartInterleavingValue(seeChartInterleaving);
-      setStreamGraphValue(isStreamChart);
+      let idOfRadioButtonToSet = "chartInterLeavingInput"
+      if(!seeChartInterleaving){
+        if(isStreamChart){
+          idOfRadioButtonToSet = "streamChartInput"
+        }else{
+          idOfRadioButtonToSet = "stackedAreaInput"
+        }
+      }
+
+    document.getElementById(idOfRadioButtonToSet).checked = true;
+
+
       UI.setZoomOutButtonVisible(false);
 
       window.addEventListener("resize", onResize)
@@ -184,12 +209,6 @@
 
     function setChartInterleavingValue(value) {
       seeChartInterleaving = value;
-      interLeavingCheckBox.checked = seeChartInterleaving;
-      if (seeChartInterleaving) {
-        streamGraphXbSpan.style.display = "none";
-      } else {
-        streamGraphXbSpan.style.display = "inline";
-      }
       adaptYScale();
       addElementsToStackedArea(data);
       if (categorySelected != 0) {
@@ -201,7 +220,6 @@
 
     function setStreamGraphValue(value) {
       isStreamChart = value;
-      streamGraphCheckBox.checked = isStreamChart;
 
       if (!seeChartInterleaving) {
         //visible changes

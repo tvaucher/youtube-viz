@@ -15,15 +15,11 @@ has_viz: true
   <img src="{{ site.baseurl }}/assets/img/zoomOut.png" alt="zoom out button" id = "zoomOutButton">
   <div id="plot1_title_container">
   </div>
+
   <div id="plot1CheckBoxes">
-    <span>
-      <input type="checkbox" name="interLeavingXb" id="interLeavingXb" />
-      <label for="interLeavingXb">See charts interleaving </label>
-    </span>
-    <span id="streamGraphXbSpan">
-      <input type="checkbox" name="streamGraphXb" id="streamGraphXb" />
-      <label for="streamGraphXb">See as stream graph </label>
-    </span>
+    <span><input type="radio" name="plotKind" value="chartInterLeavingInput" id="chartInterLeavingInput" /> <label for="chartInterLeavingInput">See Interleaving Chart</label></span>
+    <span><input type="radio" name="plotKind" value="streamChartInput" id="streamChartInput" /> <label for="streamChartInput">See Graph as Stream Chart</label></span>
+    <span><input type="radio" name="plotKind" value="stackedAreaInput" id="stackedAreaInput" checked/> <label for="stackedAreaInput">See Graph as Stacked Area</label></span>
   </div>
   <div id="plot1_container">
   </div>
