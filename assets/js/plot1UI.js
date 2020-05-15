@@ -496,14 +496,6 @@
 
     positionBrush(null, null);
 
-    let elem = sliderBox
-    .select(".xbrush")
-    .select(".overlay")
-    .on("mousedown", function () {
-      timeIntervalSelected = [smallestDate, biggestDate];
-      onBrush();
-    });
-
     // Brush handler. Get time-range from a brush and pass it to the charts.
     function cleanBrushInterval() {
       //d3.event.selection looks like [622,698] for example
@@ -536,6 +528,14 @@
     .call(bbrush)
     .call(bbrush.move, position)
     .selectAll("rect");
+
+    let elem = sliderBox
+    .select(".xbrush")
+    .select(".overlay")
+    .on("mousedown", function () {
+      timeIntervalSelected = [smallestDate, biggestDate];
+      onBrush();
+    });
   }
 
   function getCleanedInterval(b) {

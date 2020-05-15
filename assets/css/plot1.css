@@ -58,6 +58,8 @@
 
 }
 
+
+
 #plot1CheckBoxes {
   margin-left: 100px;
   margin-top: 5px;
@@ -145,6 +147,7 @@ svg text::selection {
   /*visibility: hidden;*/
   height: 10px;
   transform: translate(0px, 25px);
+  stroke: yellow;
 }
 
 .upperLinesContainer path {
