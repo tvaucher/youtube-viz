@@ -167,6 +167,12 @@ svg text::selection {
   stroke: #b1b1b1;
 }
 
+.tick text {
+  fill: #b1b1b1;
+  font-size: 14px;
+  stroke: none;
+}
+
 .rect {
   fill: steelblue;
   stroke: #b1b1b1;
@@ -212,8 +218,7 @@ svg text::selection {
 .sliderBox g path,
 .sliderBox g line,
 .sliderBox g tick,
-.sliderBox .outerTick,
-.sliderBox text {
+.sliderBox .outerTick {
   stroke: #b1b1b1;
 }
 
@@ -323,7 +328,8 @@ input[type="radio"].toggle:checked + label:after {
 }
 
 #tableTitle,
-#durationTitle {
+#durationTitle,
+#histTitle {
   font-size: 16px;
   padding: 5px 0 10px;
   font-weight: bold;
@@ -474,6 +480,11 @@ thead th:last-child {
 #duration_plot {
   height: 90%;
   width: 50%;
+}
+
+#hist_plot {
+  flex: 1;
+  height: 90%;
 }
 
 /* LOADING TABLE */
