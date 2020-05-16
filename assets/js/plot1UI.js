@@ -1184,7 +1184,7 @@ function updateColor(color) {
 }
 
 function colorForIndex(index) {
-  var colors = [
+  /*var colors = [
     "#0DEDBA  ",
     "#3097E9",
     "#8328E1",
@@ -1192,6 +1192,15 @@ function colorForIndex(index) {
     "#FD7D06",
     "#F3FF00",
     "#15E500 ",
+  ];*/
+  var colors = [
+    "#FD612C  ",
+    "#62D26F",
+    "#E362E3",
+    "#AA62E3",
+    "#E8384F",
+    "#20AAEA",
+    "#EEC300 ",
   ];
   return colors[index % colors.length];
 }
