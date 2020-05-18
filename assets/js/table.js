@@ -57,7 +57,7 @@
         d.thumbnail = `<a class="showVideoOnClick" data-song-id=${
           d.display_id
         } data-upload-timestamp=${d.date.getTime()}>
-        <img class="thumbnail" height="70px" src="https://i.ytimg.com/vi/${
+        <img class="thumbnail" height="60px" src="https://i.ytimg.com/vi/${
           d.display_id
         }/mqdefault.jpg" alt="Video">
         <span class="videoTitle">${d.title}</span>

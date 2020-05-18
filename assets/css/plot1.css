@@ -34,7 +34,7 @@
 
 #plot1_container {
   /*border: 1px solid blue;*/
-  height: 380px;
+  height: 330px;
 }
 
 #settingButton {
@@ -240,7 +240,7 @@ svg text::selection {
   border: none;
   text-align: left;
   outline: none;
-  height: 47px;
+  height: 37px;
   transition: background-color 600ms ease;
 }
 
@@ -265,7 +265,7 @@ svg text::selection {
 .btn {
   border: 3px solid #ac4142;
   display: inline-block;
-  padding: 10px;
+  padding: 5px;
   position: relative;
   text-align: center;
   -webkit-transition: background 600ms ease, color 600ms ease;
@@ -323,7 +323,7 @@ input[type="radio"].toggle:checked + label:after {
 }
 
 #plot2_container {
-  height: 450px;
+  height: 300px;
   display: flex;
 }
 
@@ -336,7 +336,7 @@ input[type="radio"].toggle:checked + label:after {
 }
 
 table {
-  width: 90%;
+  width: 95%;
   border-collapse: collapse;
   border-spacing: 0;
   border: 2px solid #b1b1b1;
@@ -371,7 +371,7 @@ thead th {
 }
 
 tbody {
-  height: 425px;
+  height: 220px;
   overflow-y: auto;
 }
 
@@ -410,8 +410,8 @@ tbody td {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
-  padding: 30px 0.3rem;
-  height: 85px;
+  padding: 23px 0.2rem;
+  height: 75px;
   vertical-align: middle;
 }
 

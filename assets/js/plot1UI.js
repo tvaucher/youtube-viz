@@ -19,7 +19,7 @@
       top: 15,
       left: 70,
       right: 40,
-      height: 300,
+      height: 250,
     };
 
     const sliderBoxPreferences = {
