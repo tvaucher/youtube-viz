@@ -3,13 +3,8 @@ layout: default
 title: Home
 permalink: /
 has_viz: true
+use_math: true
 ---
-<div class="content-text">
-  <h1>YouTube Data Visualization</h1>
-  <p>
-    Welcome. This is an early prototype of the YouTube Viz for the 2<sup>nd</sup> Milestone.
-  </p>
-</div>
 <div class="plot1">
   <img src="{{ site.baseurl }}/assets/img/settingButton.png" alt="zoom out button" id="settingButton">
   <img src="{{ site.baseurl }}/assets/img/zoomOut.png" alt="zoom out button" id="zoomOutButton">
@@ -17,9 +12,12 @@ has_viz: true
   </div>
 
   <div id="plot1CheckBoxes">
-    <span><input type="radio" name="plotKind" value="chartInterLeavingInput" id="chartInterLeavingInput" /> <label for="chartInterLeavingInput">Interleaving Chart</label></span>
-    <span><input type="radio" name="plotKind" value="streamChartInput" id="streamChartInput" /> <label for="streamChartInput">Stream Chart</label></span>
-    <span><input type="radio" name="plotKind" value="stackedAreaInput" id="stackedAreaInput" checked/> <label for="stackedAreaInput">Stacked Area</label></span>
+    <span><input type="radio" name="plotKind" value="chartInterLeavingInput" id="chartInterLeavingInput" /> <label
+        for="chartInterLeavingInput">Interleaving Chart</label></span>
+    <span><input type="radio" name="plotKind" value="streamChartInput" id="streamChartInput" /> <label
+        for="streamChartInput">Stream Chart</label></span>
+    <span><input type="radio" name="plotKind" value="stackedAreaInput" id="stackedAreaInput" checked /> <label
+        for="stackedAreaInput">Stacked Area</label></span>
   </div>
   <div id="plot1_container">
   </div>
@@ -55,21 +53,56 @@ has_viz: true
       </div>
       <div id="hist_plot">
         <div id="histTitle"><select id="countSelect">
-          <option value="0">Views Count</option>
-          <option value="1">Likes Count</option>
-          <option value="2">Dislikes Count</option>
-        </select><label for="countSelect" id="countTitle"> distribution of all categories videos for all time</label></div>
+            <option value="0">Views Count</option>
+            <option value="1">Likes Count</option>
+            <option value="2">Dislikes Count</option>
+          </select><label for="countSelect" id="countTitle"> distribution of all categories videos for all time</label>
+        </div>
       </div>
     </div>
   </div>
 </div>
 <div class="content-text">
-  <h2>Comments</h2>
+  <h1>Welcome in the world of YouTube videos</h1>
   <p>
-    The plots currently represent the evolution of the score of each category over time. The formula for it is described
-    <a href="{{ site.baseurl }}/milestone-2/">here</a>.
-    We directly remark that there's a huge spike in fall 2009 in the music category. This is due to VEVO dumping in a
-    very short period of time, almost all the clips from last century's music.
+    In this project, we aim at exploring the metadata of 96 million YouTube videos. They span from the very origin of
+    YouTube to late 2019 when the data was scraped. We use a sample from English channels with more than 10 thousand
+    subscribers as our source. For your convenience, we present only data from January 2008 to June 2019 so you can
+    appreciate how YouTube grew over the years. The visualization is separated into two parts, the main visualization on
+    the top with the weekly category score and aggregated results for the selected time interval and categories below.
+  </p>
+  <h2>How to navigate through time and categories</h2>
+  <p>
+    The main way to change the time is by panning and selecting a time interval either on the main graph directly or on
+    the timeline below it. You can drag and modify your selection on the timeline. If you are interested in getting data
+    weekly instead of an aggregation over the selected time interval, please toggle the button below the table. In this
+    mode, you can press <code>f</code> while hovering the plots to freeze the time and learn more about the
+    distributions of the main metrics. To select a given category, simply click on the category name or on the category
+    in the main plot.
+  </p>
+  <h2>Ranking categories over time</h2>
+  <p>
+    For a given category \(C_i\) and a time period \(T\), its score \(score(C_i, T)\) can be defined as
+    \[score(C_i, T) = \sum_{c_j = C_i \wedge t_j \in T} v_j \cdot w_j \]
+    Where for a given video \(j\): \(c_j\) is its category, \(t_j\) its publish date, \(v_j\) its number of
+    views and \(w_j\) the weight associated with the channel that published the video. This weight is inversely
+    proportional to the probability of a channel being sampled during the scrap phase. Rarer channels have higher
+    weights because they are underrepresented in our sample. The score is then scaled down by 1 milion to have a
+    comprehensible Y axis.
+  </p>
+  <h2>An interesting spike to look at</h2>
+  <p>
+    While you enjoy some old music that hang on the top of our charts using our embedded video player, you may think
+    where do they come from? You may have spotted this huge spike in late 2009 in the music category. It is flagrant if
+    you view the chart in interleaving mode (Click the cogwheel to change the disposition). Well, as we have a view of
+    the data as it was in November 2019, we see an accumulated number of views for this short period. This is thanks to
+    VEVO, dropping most of last century music clips for our enjoyment in less than a month.
+  </p>
+  <p>
+    <em>
+      We hope that you can enjoy some of your time listening or watching some relics of the past while uncovering more
+      about the evolution of YouTube.
+    </em>
   </p>
 </div>
 
