@@ -179,10 +179,6 @@ svg text::selection {
   stroke: #b1b1b1;
 }
 
-.rect:hover {
-  fill: lightsteelblue;
-}
-
 .tooltip {
   display: none;
   position: absolute;
