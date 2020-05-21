@@ -186,10 +186,10 @@
             )}`
           : `for ${dateFormat(selectedTimeInterval)}`;
       d3.select("#durationTitle").text(
-        `Duration distribution of ${catText} videos ${timeText}`
+        `Duration of ${catText} videos ${timeText}`
       );
       d3.select("#countTitle").text(
-        ` distribution of ${catText} videos ${timeText}`
+        ` of ${catText} videos ${timeText}`
       );
     }
 
