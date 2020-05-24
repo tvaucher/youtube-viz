@@ -1206,13 +1206,13 @@ function colorForIndex(index) {
 }
 function colorForFadingIndex(index) {
   var colors = [
-    "#2E5763",
-    "#234B70",
-    "#502F5D",
-    "#5D2F2F",
-    "#5D4D2F",
-    "#5B5D2F",
-    "#1E5B18",
+    "#752b12",
+    "#2a5c30",
+    "#5c285c",
+    "#583275",
+    "#691a24",
+    "#105373",
+    "#6e5a00",
   ];
   return colors[index % colors.length];
 }
