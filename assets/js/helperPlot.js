@@ -270,7 +270,7 @@
           )
           .style("text-anchor", "middle")
           .attr("class", "axisLabel")
-          .text("Duration in seconds");
+          .text("Duration in minutes");
       }
 
       redraw() {
