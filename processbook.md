@@ -9,7 +9,7 @@ use_math: true
 <p class="disclaimer"><b>Disclaimer:</b> This report is also available as <a href="{{ '/assets/pdf/process-book.pdf' | absolute_url }}">a 6-page pdf</a> or you can print this page with <code>ctrl + p</code></p>
 ## 1. Welcome in the world of YouTube Videos
 ### 1.1 Origin of the idea
-Our main aim with this project was to learn valuable skills from this class, while creating a visualization that was meaningful and usable in purposes outside of the class. To combine these two requirements, we asked the [dlab](https://dlab.epfl.ch/) where Timoté is doing his semester project, if any PhD students would need an interactive visualization for his research. [Manoel Horta](mailto:manoel.hortaribeiro@epfl.ch) provided us with his recent scrap of 96 million YouTube videos metadata that he was using to study the evolution of trends on YouTube from 2008 to 2019. We were given *carte blanche* on how to visualize this data but kept in touch with him for feedbacks and insightful discussions.
+Our main aim with this project was to learn valuable skills from this class, while creating a visualization that was meaningful and usable in purposes outside of the class. To combine these two requirements, we asked the [dlab](https://dlab.epfl.ch/) where Timoté is doing his semester project, if any PhD students would need an interactive visualization for his research. [Manoel Horta](mailto:manoel.hortaribeiro@epfl.ch) provided us with his recent scrap of 96 million YouTube videos metadata that he was using to study the evolution of trends on YouTube from 2008 to 2019. We were given free rein over how we choose to visualize this data but kept in touch with him for feedbacks and insightful discussions.
 
 ### 1.2 Early visualization ideas
 To stay within the aim of the research and make something that could be accompany the paper submission, we wanted to show the different kinds of content and formats that prospered on YouTube over the last decade. 
@@ -32,7 +32,7 @@ On hover, a table would have displayed the best videos on YouTube at a given tim
     <img src="https://i.imgur.com/o0JR8FB.jpg" alt="Sketch additional plots">
 </figure>
 
-By clicking a category in the stacked area plot, we wanted to make appear a third interactive graph below the table of the best videos. This graph was intended to display different aspect of the category selected over the time. By clicking on a segmented control, the user could decide to visualize either the duration, the number of view, the ratio like/dislike or the average ranking of a category over time.
+By clicking a category in the stacked area plot, we wanted to make a third interactive graph appear below the table of the best videos. This graph was intended to display different aspect of the category selected over the time. By clicking on a segmented control, the user could decide to visualize either the duration, the number of view, the ratio like/dislike or the average ranking of a category over time.
 
 ### 1.3 Intended Preprocessing challenges
 #### A. Data Processing
@@ -50,7 +50,7 @@ Where for a given video \\(j\\): \\(c_j\\) is its category, \\(t_j\\) its public
 ## 2. A path full of pitfalls
 
 ### 2.1 A stacked area only? Not such a good idea!
-When we first succeed at representing the categories of videos in a static graph, we faced a problem: the graph was not as smooth as expected. Instead of a constant and regular evolutions of the trends over time, the weekly granularity chosen made the paths look sharp, with a lot of peaks and depths. Moreover, we realized that the categories were unbalanced. 
+Upon our initial success at representing the categories of videos in a static graph, we faced a problem: the graph was not as smooth as expected. Instead of a constant and regular evolutions of the trends over time, the weekly granularity chosen made the paths look sharp, with a lot of peaks and depths. Moreover, we realized that the categories were unbalanced. 
 <figure class="process-book">
     <img src="https://i.imgur.com/7WXoYbC.jpg" alt="Early version of stacked area plot">
 </figure>
@@ -66,7 +66,7 @@ As we could not imagine a single plot that would have solved all the above probl
 <figure class="process-book">
     <img src="https://i.imgur.com/0SvUnG0.jpg" alt="Dynamic scaling stacked area">
 </figure>
-By selecting any category, it should have changed the chart order, to make the category appear bottommost. That way, the category would not have been distorted by a superposition with charts below it. Moreover, selecting this category dynamically adapts the y-axis, in order to maximize the space occupied by this category on screen.
+By selecting any category, it should have changed the chart order, to make the category appear at the bottomt. That way, the category would not have been distorted by a superposition with charts below it. Moreover, selecting this category dynamically adapts the y-axis, in order to maximize the space occupied by this category on screen.
 
 ##### We called our second solution the **Interleaving Chart**:
 <figure class="process-book">
@@ -81,7 +81,7 @@ By selecting any category, it should have changed the chart order, to make the c
 
 These plots are basically a superposition of charts which are filled with transparency. This allow the user to see clearly the exact shape of each chart. The limitation is that the more categories there are, the more confusing the plot becomes. As we had 7 categories to plot, it was too much for such a graph. Hence, we decided to implement something new: it works the same that the above area chart, but without transparency: we only show the lowermost color. At any timestamp, you can know the categories ranking by looking at vertical color interleaving.
 
-The implementation of this graph was quite challenging. To get coherent result, we had to look at our time series to find the critical indexes where any two series were crossing each other. Then we had to stroke the charts. With the help of the method [getPointAtLength()](https://developer.mozilla.org/en-US/docs/Web/API/SVGGeometryElement/getPointAtLength), we could iterate along the paths to find the exact timestamp (with some delta approximation, expressed in pixel) where the charts were crossing. Once we had the exact intersections timestamps, we then fill the chart in the order they had to appear between any 2 critical timestamps with the help of a clip-path. 
+The implementation of this graph was quite challenging. To get coherent results, we had to look at our time series to find the critical indexes where any two series were crossing each other. Then we had to stroke the charts. With the help of the method [getPointAtLength()](https://developer.mozilla.org/en-US/docs/Web/API/SVGGeometryElement/getPointAtLength), we could iterate along the paths to find the exact timestamp (with some delta approximation, expressed in pixel) where the charts were crossing. Once we had the exact intersections timestamps, we then fill the chart in the order they had to appear between any 2 critical timestamps with the help of a clip-path. 
 As this computation was taking a lot of time, we had to optimize it by retaining only the indexes that were in the visible area of the graph and computing the intersection value with an error that was expressed in pixel. This was the most efficient way to provide to the user eyes a clean result independently of how much he was zooming in the graph.
 At that time, the computation time was small enough to provide the user a nice experience, but there were too many elements in the canvas. This was making the web page lag when the mouse was on hover the graph. To get rid of this, we had to skip the rendering of the charts which width were smaller than a certain pixel tolerance. In the final version, we decided to compute the chart interleaving 500ms after the user ended to scroll in the graph. 
 
@@ -110,7 +110,7 @@ We mentioned in the preprocessing section that we also pre-computed some histogr
 </figure>
 
 ### 2.5 A Simple redirection to YouTube? Not cool enough!
-While we might have put a link to YouTube to let the user watch the video he found interesting, he could have been sad not to be offered the possibility to watch his video directly in our website 😁
+While we might have put a link to YouTube to let the user watch the video he found interesting, the user would have been sad not to be offered the possibility to watch his video directly in our website 😁
 <figure class="process-book">
     <img src="https://i.imgur.com/7O74eOH.gif" alt="Helper plots">
     <figcaption>We added transitions to accentuate the change when a filter is applied.</figcaption>
@@ -124,7 +124,7 @@ After a discussion with our professor Laurent Vuillon, we decided to choose colo
 **We hope you visit our visualization by clicking [here]({{ '/' | absolute_url }})**
 
 ## Acknowledgement
-We first wish to thank Manoel Horta, PhD student at dlab EPFL, for providing us the dataset as well as many insightful feedbacks that helped us create the Visualization that you find on our homepage. We are also grateful to dlab EPFL, headed by Robert West, that let us use their infrastructure to handle the preprocessing. Finally, we thank Laurent Vuillon that mentored us during this project.
+We first wish to thank Manoel Horta, PhD student at dlab EPFL, for providing us the dataset as well as many insightful feedback that helped us create the Visualization that you find on our homepage. We are also grateful to dlab EPFL, headed by Robert West, that let us use their infrastructure to handle the preprocessing. Finally, we thank Laurent Vuillon that mentored us during this project.
 
 ## Peer assessment
 As we were a group of two students, no one could take the opportunity to hide behind the rest of the group. Thus, we both contributed equally to this project.
