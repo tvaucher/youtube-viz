@@ -6,6 +6,7 @@ use_math: true
 ---
 # YouTube viz - Process book
 
+<p class="disclaimer"><b>Disclaimer:</b> This report is also available as <a href="{{ '/assets/pdf/process-book.pdf' | absolute_url }}">a 6-page pdf</a> or you can print this page with <code>ctrl + p</code></p>
 ## 1. Welcome in the world of YouTube Videos
 ### 1.1 Origin of the idea
 Our main aim with this project was to learn valuable skills from this class, while creating a visualization that was meaningful and usable in purposes outside of the class. To combine these two requirements, we asked the [dlab](https://dlab.epfl.ch/) where Timoté is doing his semester project, if any PhD students would need an interactive visualization for his research. [Manoel Horta](mailto:manoel.hortaribeiro@epfl.ch) provided us with his recent scrap of 96 million YouTube videos metadata that he was using to study the evolution of trends on YouTube from 2008 to 2019. We were given *carte blanche* on how to visualize this data but kept in touch with him for feedbacks and insightful discussions.
