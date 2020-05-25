@@ -9,11 +9,13 @@
     const powFormat = (number) =>
       number <= 1024 ? number : d3.format(".3s")(number).replace(/G/, "Bn");
     const pprint_seconds = (seconds) => {
-      if (seconds < 60) return `${seconds}"`
-      let minutes = parseInt(Math.floor(seconds / 60))
-      let remainder = (seconds % 60).toString()
-      return `${minutes}'` + (remainder > 0 ? `${remainder.padStart(2, 0)}"`: '')
-    }
+      if (seconds < 60) return `${seconds}"`;
+      let minutes = parseInt(Math.floor(seconds / 60));
+      let remainder = (seconds % 60).toString();
+      return (
+        `${minutes}'` + (remainder > 0 ? `${remainder.padStart(2, 0)}"` : "")
+      );
+    };
 
     // DOM element for helper plot 1
     const containerName = "duration_plot";
@@ -194,9 +196,7 @@
       d3.select("#durationTitle").text(
         `Duration of ${catText} videos ${timeText}`
       );
-      d3.select("#countTitle").text(
-        ` of ${catText} videos ${timeText}`
-      );
+      d3.select("#countTitle").text(` of ${catText} videos ${timeText}`);
     }
 
     class DurationHist {
@@ -211,7 +211,10 @@
           .scaleLinear()
           .domain([0, d3.max(hist)])
           .range([height, 0]);
-        this.xAxis = d3.axisBottom(this.x).tickFormat(pprint_seconds);
+        this.xAxis = d3
+          .axisBottom(this.x)
+          .tickValues([0, 300, 600, 900, 1200, 1500, 1800])
+          .tickFormat(pprint_seconds);
         this.yAxis = d3.axisLeft(this.y).tickFormat(d3.format(".2s"));
         this.xAxisContainer = svg
           .append("g")
@@ -239,7 +242,11 @@
               .style("left", d3.event.pageX - 35 + "px")
               .style("top", d3.event.pageY - 60 + "px")
               .style("display", "inline-block")
-              .html(`(${bins[i]} &ndash; ${bins[i + 1]})<br>${numberFormat(d)}`)
+              .html(
+                `(${pprint_seconds(bins[i])} &ndash; ${pprint_seconds(
+                  bins[i + 1]
+                )})<br>${numberFormat(d)}`
+              )
           )
           .on("mouseout", (d) => tooltip.style("display", "none"));
 
