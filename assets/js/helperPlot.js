@@ -8,6 +8,12 @@
       d3.format(".4s")(number).replace(/G/, "Bn");
     const powFormat = (number) =>
       number <= 1024 ? number : d3.format(".3s")(number).replace(/G/, "Bn");
+    const pprint_seconds = (seconds) => {
+      if (seconds < 60) return `${seconds}"`
+      let minutes = parseInt(Math.floor(seconds / 60))
+      let remainder = (seconds % 60).toString()
+      return `${minutes}'` + (remainder > 0 ? `${remainder.padStart(2, 0)}"`: '')
+    }
 
     // DOM element for helper plot 1
     const containerName = "duration_plot";
@@ -205,7 +211,7 @@
           .scaleLinear()
           .domain([0, d3.max(hist)])
           .range([height, 0]);
-        this.xAxis = d3.axisBottom(this.x);
+        this.xAxis = d3.axisBottom(this.x).tickFormat(pprint_seconds);
         this.yAxis = d3.axisLeft(this.y).tickFormat(d3.format(".2s"));
         this.xAxisContainer = svg
           .append("g")
