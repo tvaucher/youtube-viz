@@ -15,15 +15,21 @@ To stay within the aim of the research and make something that could be accompan
 The solution we found the most appropriate to illustrate the above consisted of several graphical elements.
 
 #### A. A stacked area plot scaled to 100%
-![](https://i.imgur.com/0BxvQMC.jpg =500x)
+<figure class="process-book">
+    <img src="https://i.imgur.com/0BxvQMC.jpg" alt="Sketch stacked area">
+</figure>
 This chart would illustrate the popularity of the different categories of videos on YouTube over time. The initial idea was to be able to compare their relative importance over the years. The stacked area would highlight a region on hover to show it is clickable to filter the information presented below by category.
 
 #### B. The most popular videos table
-![](https://i.imgur.com/NvVD5bS.jpg =500x)
+<figure class="process-book">
+    <img src="https://i.imgur.com/NvVD5bS.jpg" alt="Sketch most popular videos table">
+</figure>
 On hover, a table would have displayed the best videos on YouTube at a given time. We thought we might display the id of the video, the channel that posted it, the number of view and a link to watch the video on YouTube. 
 
 #### C. A more detailed view per category
-![](https://i.imgur.com/o0JR8FB.jpg =500x)
+<figure class="process-book">
+    <img src="https://i.imgur.com/o0JR8FB.jpg" alt="Sketch additional plots">
+</figure>
 
 By clicking a category in the stacked area plot, we wanted to make appear a third interactive graph below the table of the best videos. This graph was intended to display different aspect of the category selected over the time. By clicking on a segmented control, the user could decide to visualize either the duration, the number of view, the ratio like/dislike or the average ranking of a category over time.
 
@@ -44,7 +50,9 @@ Where for a given video \\(j\\): \\(c_j\\) is its category, \\(t_j\\) its public
 
 ### 2.1 A stacked area only? Not such a good idea!
 When we first succeed at representing the categories of videos in a static graph, we faced a problem: the graph was not as smooth as expected. Instead of a constant and regular evolutions of the trends over time, the weekly granularity chosen made the paths look sharp, with a lot of peaks and depths. Moreover, we realized that the categories were unbalanced. 
-![](https://i.imgur.com/7WXoYbC.jpg)
+<figure class="process-book">
+    <img src="https://i.imgur.com/7WXoYbC.jpg" alt="Early version of stacked area plot">
+</figure>
 
 #### Induced problems:
 * The spikes of the paths made it difficult to visualize any category that was not displayed at the bottom of the graph. Since the superposition of the chart in the graph increases this spiking effect, the category that were displayed on the top of the graph were quite unreadable. 
@@ -54,15 +62,21 @@ When we first succeed at representing the categories of videos in a static graph
 #### Approached solutions:
 As we could not imagine a single plot that would have solved all the above problems, we decided to implement two different graphs: 
 ##### The first one was a **clever** stacked area:
-![](https://i.imgur.com/0SvUnG0.jpg)
+<figure class="process-book">
+    <img src="https://i.imgur.com/0SvUnG0.jpg" alt="Dynamic scaling stacked area">
+</figure>
 By selecting any category, it should have changed the chart order, to make the category appear bottommost. That way, the category would not have been distorted by a superposition with charts below it. Moreover, selecting this category dynamically adapts the y-axis, in order to maximize the space occupied by this category on screen.
 
 ##### We called our second solution the **Interleaving Chart**:
-![](https://i.imgur.com/wSOKNU6.jpg)
-On the left: what we wanted to design, on the right: our results
+<figure class="process-book">
+    <img src="https://i.imgur.com/wSOKNU6.jpg" alt="Interleaving chart">
+    <figcaption>On the left: what we wanted to design, on the right: our results</figcaption>
+</figure>
 
-![](https://i.imgur.com/trMMEyj.jpg =300x)
-The origin of the idea came to our mind when we were looking at some area chart example found over internet like this one
+<figure class="process-book">
+    <figcaption>The origin of the idea came to our mind when we were looking at some area chart example found over internet like this one</figcaption>
+    <img src="https://i.imgur.com/trMMEyj.jpg" alt="Area chart from the web" style="max-width: 60%; margin: auto;">
+</figure>
 
 These plots are basically a superposition of charts which are filled with transparency. This allow the user to see clearly the exact shape of each chart. The limitation is that the more categories there are, the more confusing the plot becomes. As we had 7 categories to plot, it was too much for such a graph. Hence, we decided to implement something new: it works the same that the above area chart, but without transparency: we only show the lowermost color. At any timestamp, you can know the categories ranking by looking at vertical color interleaving.
 
@@ -73,11 +87,15 @@ At that time, the computation time was small enough to provide the user a nice e
 ### 2.2 A fixed x-axis? Not enough!
 As our time series were long enough to make it necessary, we decided to let the user zoom in the graph.
 
-![](https://i.imgur.com/9tNPu2W.gif)
-You can even click and drag in the graph,
+<figure class="process-book">
+    <img src="https://i.imgur.com/9tNPu2W.gif" alt="Click and drag to zoom">
+    <figcaption>You can even click and drag in the graph,</figcaption>
+</figure>
 
-![](https://i.imgur.com/TXQVo3W.gif)
-or use the [d3 brush](https://github.com/d3/d3-brush) to zoom and explore the data. 
+<figure class="process-book">
+    <img src="https://i.imgur.com/TXQVo3W.gif" alt="Use the brush to zoom">
+    <figcaption>or use the <a href="https://github.com/d3/d3-brush">d3 brush</a> to zoom and explore the data.</figcaption>
+</figure> 
 
 ### 2.3 Check out the best videos out there
 Below the main visualization, we present the top videos in a table in which you can play it using our embed player while continuing to explore the dataset. The table is the only "plot" that is in [`dc.js`](http://dc-js.github.io/dc.js/), the other ones being in pure `d3.js`. It shows information such as the publication date, the number of views, likes, dislikes and its duration. The data is sorted by number of views. We use [`crossfilter`](http://crossfilter.github.io/crossfilter/) in order to be able to filter the large data that we have over a given period of time or a given category. The filters are coordinated with your actions on the main visualization.
@@ -85,12 +103,17 @@ Below the main visualization, we present the top videos in a table in which you 
 ### 2.4 Let's learn more about our data
 We mentioned in the preprocessing section that we also pre-computed some histograms. They are displayed below the table and also listen to the same `crossfilter` filters. They allow the user to learn more about the distribution of 4 important metrics: videos duration, views, likes and dislikes count. Compared to the early version, we polished the results and separated it into the 2 histograms you can see. In our opinion, it is important to be able to visualize the duration distribution separately from the counts that are inherently linked together: more views usually mean more likes/dislikes.
 
-![](https://i.imgur.com/zNAKc1W.gif)
-We added transition to accentuate the change when a filter is applied.
+<figure class="process-book">
+    <img src="https://i.imgur.com/zNAKc1W.gif" alt="Helper plots">
+    <figcaption>We added transitions to accentuate the change when a filter is applied.</figcaption>
+</figure>
 
 ### 2.5 A Simple redirection to YouTube? Not cool enough!
 While we might have put a link to YouTube to let the user watch the video he found interesting, he could have been sad not to be offered the possibility to watch his video directly in our website 😁
-![](https://i.imgur.com/7O74eOH.gif)
+<figure class="process-book">
+    <img src="https://i.imgur.com/7O74eOH.gif" alt="Helper plots">
+    <figcaption>We added transitions to accentuate the change when a filter is applied.</figcaption>
+</figure>
 
 Hence, we decided to put an embedded YouTube video player directly in our web page: the user can browse the content of YouTube in our web page while listening to his favorite music. Finally, this player is completely draggable, resizable or minimizable.
 

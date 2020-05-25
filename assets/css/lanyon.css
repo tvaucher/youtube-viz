@@ -557,3 +557,8 @@ a.pagination-item:hover {
 .layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
   box-shadow: -.25rem 0 .5rem rgba(0,0,0,.1);
 }
+
+figure.process-book {
+  max-width: 80%;
+  margin: 1rem auto 1.5rem auto;
+}
